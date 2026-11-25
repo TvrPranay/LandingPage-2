@@ -24,6 +24,7 @@ interface TeamPageProps {
   onScrollToAchievements?: () => void;
   onOpenTeam?: () => void;
   onOpenEvents?: () => void;
+  onOpenClubs?: () => void;
   onOpenOpportunities?: () => void;
 }
 
@@ -35,6 +36,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({
   onScrollToAchievements,
   onOpenTeam,
   onOpenEvents,
+  onOpenClubs,
   onOpenOpportunities,
 }) => {
 
@@ -62,6 +64,8 @@ export const TeamPage: React.FC<TeamPageProps> = ({
         onOpenLogin={onOpenLogin}
         onOpenTeam={onOpenTeam || (() => document.getElementById('team-roster')?.scrollIntoView({ behavior: 'smooth' }))}
         onOpenEvents={onOpenEvents}
+        onOpenClubs={onOpenClubs}
+        activeNav="team"
       />
 
       {/* 2. Hero Section: Direct Match with Reference Mockup */}
@@ -190,6 +194,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({
         onOpenContact={onOpenContact}
         onOpenOpportunities={onOpenOpportunities}
         onOpenEvents={onOpenEvents}
+        onOpenClubs={onOpenClubs}
       />
     </div>
   );

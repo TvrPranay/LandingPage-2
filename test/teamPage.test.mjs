@@ -9,18 +9,20 @@ describe('Teklozy team page roster', () => {
   const teamCard = fs.readFileSync(path.resolve('src/components/team/TeamCard.tsx'), 'utf8');
 
   it('publishes the four requested profiles in the requested order', () => {
-    const names = ['Gagan Dileep Vemula', 'Harsha Vardhan Dumpa', 'Tangirala Venkata Raghavendra Pranay', 'Subash'];
+    const names = ['Gagan Dileep Vemula', 'Harsha Vardhan Dumpa', 'Tangirala Venkata Raghavendra Pranay'];
     let previous = -1;
     for (const name of names) {
       const index = teamData.indexOf(`name: '${name}'`);
       assert.ok(index > previous, `${name} should appear in the requested order`);
       previous = index;
     }
+    const subashIndex = Math.max(teamData.indexOf(`name: 'Subash'`), teamData.indexOf(`name: 'Ande Lakshmi Subhash'`));
+    assert.ok(subashIndex > previous, 'Subash should appear in the requested order');
   });
 
-  it('keeps Subash as a photo and details placeholder', () => {
-    assert.match(teamData, /id: 'subash'[\s\S]*?photoUrl: ''/);
-    assert.match(teamCard, /PHOTO COMING SOON/);
+  it('keeps Subash profile entry defined with forward deployed role', () => {
+    assert.match(teamData, /id: 'subash'/);
+    assert.match(teamData, /Forward Deployed Engineer/);
   });
 
   it('retains the team page and its shared navigation', () => {

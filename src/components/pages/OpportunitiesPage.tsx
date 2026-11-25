@@ -8,6 +8,7 @@ type PageProps = {
   onScrollToLevel: (levelId: number) => void;
   onScrollToAchievements?: () => void;
   onOpenEvents: () => void;
+  onOpenClubs?: () => void;
   onOpenOpportunities: () => void;
   onOpenTeam: () => void;
   onOpenLogin: () => void;
@@ -15,7 +16,7 @@ type PageProps = {
 };
 
 const PageFrame: React.FC<PageProps & { children?: React.ReactNode }> = ({
-  onNavigateHome, onScrollToLevel, onScrollToAchievements, onOpenEvents, onOpenOpportunities, onOpenTeam, onOpenLogin, onOpenContact, children,
+  onNavigateHome, onScrollToLevel, onScrollToAchievements, onOpenEvents, onOpenClubs, onOpenOpportunities, onOpenTeam, onOpenLogin, onOpenContact, children,
 }) => (
   <div className="min-h-screen bg-[#F7FAFE] text-slate-900 font-manrope">
     <Header
@@ -25,6 +26,7 @@ const PageFrame: React.FC<PageProps & { children?: React.ReactNode }> = ({
       onOpenLogin={onOpenLogin}
       onOpenTeam={onOpenTeam}
       onOpenEvents={onOpenEvents}
+      onOpenClubs={onOpenClubs}
     />
     <main className="min-h-[72vh] px-4 sm:px-6 pt-32 pb-20">
       <div className="max-w-5xl mx-auto">
@@ -43,6 +45,7 @@ const PageFrame: React.FC<PageProps & { children?: React.ReactNode }> = ({
       onOpenLogin={onOpenLogin}
       onOpenOpportunities={onOpenOpportunities}
       onOpenEvents={onOpenEvents}
+      onOpenClubs={onOpenClubs}
       onNavigateToLevel={onScrollToLevel}
     />
   </div>

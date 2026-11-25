@@ -47,8 +47,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({ member }) => {
             decoding="async"
             width={825}
             height={1100}
-            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 ease-out"
-          />
+            className="w-full h-full object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-500 ease-out"          />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-sky-100 via-white to-blue-100 text-sky-800" aria-label="Profile photo placeholder">
             <span className="flex h-20 w-20 items-center justify-center rounded-full border border-sky-200 bg-white/80 text-3xl font-extrabold shadow-sm">S</span>

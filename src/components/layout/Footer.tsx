@@ -11,6 +11,7 @@ interface FooterProps {
   onNavigateHome?: () => void;
   onOpenOpportunities?: () => void;
   onOpenEvents?: () => void;
+  onOpenClubs?: () => void;
   brandName?: string;
 }
 
@@ -31,6 +32,7 @@ export const Footer: React.FC<FooterProps> = ({
   onNavigateHome,
   onOpenOpportunities,
   onOpenEvents,
+  onOpenClubs,
   brandName = 'Teklozy',
 }) => {
   const handleScrollTop = (e: React.MouseEvent) => {
@@ -140,6 +142,7 @@ export const Footer: React.FC<FooterProps> = ({
               <h4 className="text-[11px] font-extrabold uppercase text-sky-300 tracking-[0.16em]">Company</h4>
               <ul className="space-y-2 sm:space-y-2.5 text-[15px] sm:text-[15px] text-slate-300 font-medium">
                 <li><button type="button" onClick={() => onOpenEvents?.()} className="hover:text-sky-300 hover:translate-x-0.5 transition-all duration-200 text-left cursor-pointer">Events & Programs</button></li>
+                <li><button type="button" onClick={() => onOpenClubs?.()} className="hover:text-sky-300 hover:translate-x-0.5 transition-all duration-200 text-left cursor-pointer">Student Clubs</button></li>
                 <li><button type="button" onClick={() => onOpenOpportunities?.()} className="hover:text-sky-300 hover:translate-x-0.5 transition-all duration-200 text-left cursor-pointer">Career Opportunities</button></li>
                 <li><button type="button" onClick={() => onOpenLogin?.()} className="hover:text-sky-300 hover:translate-x-0.5 transition-all duration-200 text-left cursor-pointer">Portal Login</button></li>
                 <li><button type="button" onClick={handleContactClick} className="hover:text-sky-300 hover:translate-x-0.5 transition-all duration-200 text-left cursor-pointer">Contact Us</button></li>

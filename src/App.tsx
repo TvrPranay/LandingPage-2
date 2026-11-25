@@ -8,20 +8,29 @@ import { ContactUsModal } from './components/ui/ContactUsModal';
 import { LoginPage } from './components/pages/LoginPage';
 import { TeamPage } from './components/pages/TeamPage';
 import { EventsPage } from './components/pages/EventsPage';
+import { ClubsPage } from './components/pages/ClubsPage';
 import { OpportunitiesPage } from './components/pages/OpportunitiesPage';
 import { TeklozyPreloader } from './components/ui/TeklozyPreloader';
+import { HackathonFloatingNotification } from './components/ui/HackathonFloatingNotification';
 import { useTeklozyJourney } from './hooks/useTeklozyJourney';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const pendingAchievements = useRef(false);
-  const [currentView, setCurrentView] = useState<'home' | 'login' | 'team' | 'events' | 'opportunities'>(() => {
+  const [eventsInitialView, setEventsInitialView] = useState<'discover' | 'detail'>(() => {
+    if (typeof window !== 'undefined' && window.location.hash.includes('teklozy-hackathon-2026')) {
+      return 'detail';
+    }
+    return 'discover';
+  });
+  const [currentView, setCurrentView] = useState<'home' | 'login' | 'team' | 'events' | 'clubs' | 'opportunities'>(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
       const hash = window.location.hash;
       if (path === '/login' || hash === '#login') return 'login';
       if (path === '/team' || hash === '#team') return 'team';
-      if (path === '/events' || hash === '#events') return 'events';
+      if (path === '/events' || hash.startsWith('#events')) return 'events';
+      if (path === '/clubs' || hash === '#clubs') return 'clubs';
       if (path === '/opportunities' || hash === '#opportunities') return 'opportunities';
       return 'home';
     }
@@ -47,8 +56,15 @@ export default function App() {
         setCurrentView('login');
       } else if (path === '/team' || hash === '#team') {
         setCurrentView('team');
-      } else if (path === '/events' || hash === '#events') {
+      } else if (path === '/events' || hash.startsWith('#events')) {
+        if (hash.includes('teklozy-hackathon-2026')) {
+          setEventsInitialView('detail');
+        } else {
+          setEventsInitialView('discover');
+        }
         setCurrentView('events');
+      } else if (path === '/clubs' || hash === '#clubs') {
+        setCurrentView('clubs');
       } else if (path === '/opportunities' || hash === '#opportunities') {
         setCurrentView('opportunities');
       } else {
@@ -70,9 +86,16 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const navigateToEvents = () => {
+  const navigateToEvents = (initialSubView: 'discover' | 'detail' = 'discover') => {
+    setEventsInitialView(initialSubView);
     setCurrentView('events');
-    window.location.hash = '#events';
+    window.location.hash = initialSubView === 'detail' ? '#events/teklozy-hackathon-2026' : '#events';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToClubs = () => {
+    setCurrentView('clubs');
+    window.location.hash = '#clubs';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -153,6 +176,7 @@ export default function App() {
           onOpenLogin={navigateToLogin}
           onOpenTeam={() => document.getElementById('team-roster')?.scrollIntoView({ behavior: 'smooth' })}
           onOpenEvents={navigateToEvents}
+          onOpenClubs={navigateToClubs}
           onOpenOpportunities={navigateToOpportunities}
           onScrollToLevel={(levelId) => {
             navigateToHome();
@@ -168,12 +192,65 @@ export default function App() {
     );
   }
 
+  // If viewing Events & Programs
   if (currentView === 'events') {
-    return <EventsPage onScrollToAchievements={navigateToAchievements} onNavigateHome={navigateToHome} onScrollToLevel={(levelId) => { navigateToHome(); window.setTimeout(() => scrollToLevel(levelId), 240); }} onOpenEvents={navigateToEvents} onOpenOpportunities={navigateToOpportunities} onOpenTeam={navigateToTeam} onOpenLogin={navigateToLogin} onOpenContact={() => setShowContactModal(true)} />;
+    return (
+      <EventsPage
+        initialSubView={eventsInitialView}
+        onScrollToAchievements={navigateToAchievements}
+        onNavigateHome={navigateToHome}
+        onScrollToLevel={(levelId) => {
+          navigateToHome();
+          window.setTimeout(() => scrollToLevel(levelId), 240);
+        }}
+        onOpenEvents={() => navigateToEvents('discover')}
+        onOpenClubs={navigateToClubs}
+        onOpenOpportunities={navigateToOpportunities}
+        onOpenTeam={navigateToTeam}
+        onOpenLogin={navigateToLogin}
+        onOpenContact={() => setShowContactModal(true)}
+      />
+    );
   }
 
+  // If viewing Student Clubs
+  if (currentView === 'clubs') {
+    return (
+      <ClubsPage
+        onScrollToAchievements={navigateToAchievements}
+        onNavigateHome={navigateToHome}
+        onScrollToLevel={(levelId) => {
+          navigateToHome();
+          window.setTimeout(() => scrollToLevel(levelId), 240);
+        }}
+        onOpenEvents={navigateToEvents}
+        onOpenClubs={navigateToClubs}
+        onOpenOpportunities={navigateToOpportunities}
+        onOpenTeam={navigateToTeam}
+        onOpenLogin={navigateToLogin}
+        onOpenContact={() => setShowContactModal(true)}
+      />
+    );
+  }
+
+  // If viewing Career Opportunities
   if (currentView === 'opportunities') {
-    return <OpportunitiesPage onScrollToAchievements={navigateToAchievements} onNavigateHome={navigateToHome} onScrollToLevel={(levelId) => { navigateToHome(); window.setTimeout(() => scrollToLevel(levelId), 240); }} onOpenEvents={navigateToEvents} onOpenOpportunities={navigateToOpportunities} onOpenTeam={navigateToTeam} onOpenLogin={navigateToLogin} onOpenContact={() => setShowContactModal(true)} />;
+    return (
+      <OpportunitiesPage
+        onScrollToAchievements={navigateToAchievements}
+        onNavigateHome={navigateToHome}
+        onScrollToLevel={(levelId) => {
+          navigateToHome();
+          window.setTimeout(() => scrollToLevel(levelId), 240);
+        }}
+        onOpenEvents={navigateToEvents}
+        onOpenClubs={navigateToClubs}
+        onOpenOpportunities={navigateToOpportunities}
+        onOpenTeam={navigateToTeam}
+        onOpenLogin={navigateToLogin}
+        onOpenContact={() => setShowContactModal(true)}
+      />
+    );
   }
 
   return (
@@ -184,15 +261,17 @@ export default function App() {
       <div className="relative min-h-screen bg-[#F7F7F2] text-[#1A1A1A] font-manrope selection:bg-[#0088E0] selection:text-white">
         <h1 className="sr-only">Teklozy — 10-Level Gamified Career Journey</h1>
 
-        {/* 1. Floating Capsule Header with Separate Login & Contact Us */}
+        {/* 1. Floating Capsule Header with Events & Programs and Clubs */}
         <Header
           forceCapsule
+          activeNav="home"
           onScrollToLevel={scrollToLevel}
           onScrollToAchievements={navigateToAchievements}
           onOpenContact={() => setShowContactModal(true)}
           onOpenLogin={navigateToLogin}
           onOpenTeam={navigateToTeam}
           onOpenEvents={navigateToEvents}
+          onOpenClubs={navigateToClubs}
         />
 
         {/* 2. Connected Modular Hero Section */}
@@ -222,12 +301,18 @@ export default function App() {
           onOpenContact={() => setShowContactModal(true)}
           onOpenOpportunities={navigateToOpportunities}
           onOpenEvents={navigateToEvents}
+          onOpenClubs={navigateToClubs}
         />
 
         {/* 6. Contact Us Modal (Form + Social Links for Students & Management) */}
         <ContactUsModal
           isOpen={showContactModal}
           onClose={() => setShowContactModal(false)}
+        />
+
+        {/* 7. Floating Hackathon Notification Popup (Bottom-Right) */}
+        <HackathonFloatingNotification
+          onRegister={() => navigateToEvents('detail')}
         />
       </div>
     </>

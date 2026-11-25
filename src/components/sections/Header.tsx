@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Calendar, Users, Trophy, Sparkles, MapPin } from 'lucide-react';
 import logoPng from '../../assets/images/erasebg-teklozy.webp';
 
 interface HeaderProps {
@@ -9,13 +9,16 @@ interface HeaderProps {
   onOpenLogin: () => void;
   onOpenTeam?: () => void;
   onOpenEvents?: () => void;
+  onOpenClubs?: () => void;
+  activeNav?: 'home' | 'events' | 'clubs' | 'team' | 'opportunities' | 'login';
   forceCapsule?: boolean;
 }
 
 /**
  * Morphing Header Component
- * - Top of page (scroll <= 40): Transparent and seamless with the hero section, matching reference images.
- * - On scroll (scroll > 40): Morphs smoothly into the floating frosted glass pill capsule.
+ * - Top of page (scroll <= 40): Seamless high-contrast banner.
+ * - On scroll (scroll > 40): Morphs into floating frosted glass pill capsule.
+ * - Supports Events & Programs and Student Clubs with responsive active styling.
  */
 export const Header: React.FC<HeaderProps> = ({
   onScrollToLevel,
@@ -24,6 +27,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenLogin,
   onOpenTeam,
   onOpenEvents,
+  onOpenClubs,
+  activeNav = 'home',
   forceCapsule = false,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -62,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
           aria-label="Main Navigation"
           className={`tk-site-nav flex items-center justify-between transition-all duration-300 ${
             showCapsule
-              ? 'bg-[#0B1528]/85 hover:bg-[#0B1528]/95 backdrop-blur-xl border border-white/20 rounded-full px-5 sm:px-7 py-2.5 sm:py-3 shadow-[0_12px_40px_rgba(0,0,0,0.32)] gap-4'
+              ? 'bg-[#0B1528]/90 hover:bg-[#0B1528]/95 backdrop-blur-xl border border-white/20 rounded-full px-5 sm:px-7 py-2.5 sm:py-3 shadow-[0_12px_40px_rgba(0,0,0,0.32)] gap-4'
               : 'bg-transparent border border-transparent px-2 py-1 gap-6'
           }`}
         >
@@ -72,7 +77,8 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none group shrink-0"
           >
             <div className="h-9 w-9 sm:h-10 sm:w-10 overflow-hidden flex items-start justify-center shrink-0">
-              <img decoding="async"
+              <img
+                decoding="async"
                 src={logoPng}
                 alt="Teklozy Emblem"
                 className="w-full h-[150%] object-contain filter drop-shadow-[0_2px_10px_rgba(0,136,224,0.45)] transition-transform duration-200 group-hover:scale-105"
@@ -84,21 +90,45 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Center: Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center gap-5 xl:gap-8 text-[13px] xl:text-[14px] font-semibold text-white/90">
+          <div className="hidden lg:flex items-center gap-4 xl:gap-6 text-[13px] xl:text-[14px] font-semibold text-white/90">
             <button
               type="button"
-              onClick={() => { onOpenEvents?.(); setMobileMenuOpen(false); }}
-              className="hover:text-white transition-colors cursor-pointer drop-shadow-xs"
+              onClick={() => {
+                onOpenEvents?.();
+                setMobileMenuOpen(false);
+              }}
+              className={`transition-all duration-200 cursor-pointer drop-shadow-xs px-2.5 py-1 rounded-full ${
+                activeNav === 'events'
+                  ? 'bg-sky-500/25 text-white font-bold border border-sky-400/40 shadow-xs'
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
+              }`}
             >
               Events & Programs
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                onOpenClubs?.();
+                setMobileMenuOpen(false);
+              }}
+              className={`transition-all duration-200 cursor-pointer drop-shadow-xs px-2.5 py-1 rounded-full ${
+                activeNav === 'clubs'
+                  ? 'bg-sky-500/25 text-white font-bold border border-sky-400/40 shadow-xs'
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Clubs
+            </button>
+
             <button
               type="button"
               onClick={() => handleNavClick(1)}
-              className="hover:text-white transition-colors cursor-pointer drop-shadow-xs"
+              className="text-white/90 hover:text-white hover:bg-white/10 px-2.5 py-1 rounded-full transition-colors cursor-pointer drop-shadow-xs"
             >
               Career Levels
             </button>
+
             <button
               type="button"
               onClick={() => {
@@ -109,10 +139,11 @@ export const Header: React.FC<HeaderProps> = ({
                 }
                 setMobileMenuOpen(false);
               }}
-              className="hover:text-white transition-colors cursor-pointer drop-shadow-xs"
+              className="text-white/90 hover:text-white hover:bg-white/10 px-2.5 py-1 rounded-full transition-colors cursor-pointer drop-shadow-xs"
             >
               Success Stories
             </button>
+
             <button
               type="button"
               onClick={() => {
@@ -122,7 +153,11 @@ export const Header: React.FC<HeaderProps> = ({
                   handleNavClick(9);
                 }
               }}
-              className="hover:text-white transition-colors cursor-pointer drop-shadow-xs"
+              className={`transition-all duration-200 cursor-pointer drop-shadow-xs px-2.5 py-1 rounded-full ${
+                activeNav === 'team'
+                  ? 'bg-sky-500/25 text-white font-bold border border-sky-400/40'
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
+              }`}
             >
               Our Team
             </button>
@@ -133,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onOpenLogin}
-              className="hidden lg:inline-block text-sm font-semibold text-white/85 hover:text-white transition-colors cursor-pointer px-3 py-1.5 rounded-full hover:bg-white/10"
+              className="hidden lg:inline-block text-sm font-semibold text-white/85 hover:text-white transition-colors cursor-pointer px-3.5 py-1.5 rounded-full hover:bg-white/10"
             >
               Log in
             </button>
@@ -141,7 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onOpenContact}
-              className="hidden sm:inline-flex items-center justify-center bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-sm px-6 py-2.5 rounded-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm cursor-pointer shrink-0"
+              className="hidden sm:inline-flex items-center justify-center bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-sm px-5 py-2.5 rounded-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm cursor-pointer shrink-0"
             >
               Contact Us
             </button>
@@ -160,15 +195,36 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Drawer Navigation */}
         {mobileMenuOpen && (
-          <div className="tk-mobile-drawer lg:hidden mt-2 bg-[#061229]/85 backdrop-blur-xl border border-white/30 rounded-3xl p-5 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200 pointer-events-auto">
-            <div className="flex flex-col gap-3 text-sm font-medium text-white/85">
+          <div className="tk-mobile-drawer lg:hidden mt-2 bg-[#061229]/95 backdrop-blur-xl border border-white/30 rounded-3xl p-5 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200 pointer-events-auto">
+            <div className="flex flex-col gap-2 text-sm font-medium text-white/85">
               <button
                 type="button"
-                onClick={() => { onOpenEvents?.(); setMobileMenuOpen(false); }}
-                className="text-left px-3 py-2 rounded-xl hover:bg-white/10 hover:text-white transition-colors"
+                onClick={() => {
+                  onOpenEvents?.();
+                  setMobileMenuOpen(false);
+                }}
+                className={`text-left px-3 py-2 rounded-xl transition-colors flex items-center justify-between ${
+                  activeNav === 'events' ? 'bg-sky-500/25 text-white font-bold' : 'hover:bg-white/10 text-white/90'
+                }`}
               >
-                Events & Programs
+                <span>Events & Programs</span>
+                <Calendar size={15} className="text-sky-400" />
               </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  onOpenClubs?.();
+                  setMobileMenuOpen(false);
+                }}
+                className={`text-left px-3 py-2 rounded-xl transition-colors flex items-center justify-between ${
+                  activeNav === 'clubs' ? 'bg-sky-500/25 text-white font-bold' : 'hover:bg-white/10 text-white/90'
+                }`}
+              >
+                <span>Clubs</span>
+                <Users size={15} className="text-sky-400" />
+              </button>
+
               <button
                 type="button"
                 onClick={() => handleNavClick(2)}
@@ -176,6 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 Career Levels
               </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -190,6 +247,7 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 Success Stories
               </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -214,7 +272,7 @@ export const Header: React.FC<HeaderProps> = ({
                   }}
                   className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold text-sm py-2.5 rounded-full text-center transition-all border border-white/20 cursor-pointer"
                 >
-                  Log in (3-Way Portal)
+                  Log in (Portal)
                 </button>
 
                 <button
@@ -223,7 +281,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onOpenContact();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-sm py-3 rounded-full text-center transition-all shadow-md cursor-pointer"
+                  className="w-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-sm py-2.5 rounded-full text-center transition-all shadow-md cursor-pointer"
                 >
                   Contact Us
                 </button>
