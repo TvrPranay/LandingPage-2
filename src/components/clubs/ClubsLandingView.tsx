@@ -1,13 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { Users, ArrowRight, Lock, Check, Bell, Award, Zap, Star, Code2, Layers, PenTool, ShieldCheck, Lightbulb } from 'lucide-react';
+import { Users, ArrowRight, Lock, Check, Bell, Trophy, Crown, Zap, Code2, Layers, PenTool, ShieldCheck, Lightbulb } from 'lucide-react';
 import { TeklozyClub } from '../../types/clubs';
 import devClubImg from '../../assets/images/clubs-imgs/dev-coding-club.png';
 import aiClubImg from '../../assets/images/clubs-imgs/aiclubimg.png';
 import designClubImg from '../../assets/images/clubs-imgs/design-club.png';
 import cyberCloudClubImg from '../../assets/images/clubs-imgs/cyber-cloud-club.png';
 import innovationClubImg from '../../assets/images/clubs-imgs/innovation-club.png';
+import onePercentStatue from '../../assets/images/clubs-imgs/one-percent-club-statue.png';
 
 interface ClubsLandingViewProps {
   clubs: TeklozyClub[];
@@ -72,139 +73,123 @@ const OnePercentSection: React.FC<{ progress: number }> = ({ progress }) => {
   };
 
   const perks = [
-    { icon: Award, label: 'Top builders' },
+    { icon: Trophy, label: 'Top builders' },
     { icon: Zap, label: 'High impact' },
-    { icon: Star, label: 'Cross-club recognition' },
+    { icon: Layers, label: 'Cross-club recognition' },
   ];
 
   return (
     <section
       aria-labelledby="one-percent-heading"
-      className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-[#0A101C] text-white"
+      className="relative isolate overflow-hidden rounded-3xl border border-amber-200/10 bg-[#050B1A] text-white lg:min-h-[31rem]"
     >
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 opacity-[0.07]"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
-          backgroundSize: '56px 56px',
-          maskImage: 'radial-gradient(70% 90% at 80% 50%, black, transparent)',
-          WebkitMaskImage: 'radial-gradient(70% 90% at 80% 50%, black, transparent)',
-        }}
-      />
-      <svg aria-hidden="true" className="absolute inset-y-0 right-0 -z-10 hidden h-full w-3/5 lg:block" viewBox="0 0 600 400" preserveAspectRatio="none" fill="none">
+      {/* Blue arcs and glow behind the statue */}
+      <svg aria-hidden="true" className="absolute inset-0 -z-10 h-full w-full" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice" fill="none">
         <defs>
-          <linearGradient id="onepct-arc" x1="40" y1="400" x2="330" y2="0" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#3B82F6" stopOpacity="0" />
-            <stop offset="0.45" stopColor="#93C5FD" stopOpacity="0.9" />
-            <stop offset="0.8" stopColor="#60A5FA" stopOpacity="0.35" />
-            <stop offset="1" stopColor="#60A5FA" stopOpacity="0" />
-          </linearGradient>
-          <radialGradient id="onepct-arc-fill" cx="0.75" cy="0.55" r="0.7">
-            <stop offset="0" stopColor="#1D4ED8" stopOpacity="0.28" />
+          <radialGradient id="onepct-bg-blue" cx="0.7" cy="0.55" r="0.6">
+            <stop offset="0" stopColor="#1D4ED8" stopOpacity="0.38" />
             <stop offset="1" stopColor="#1D4ED8" stopOpacity="0" />
           </radialGradient>
-          <filter id="onepct-arc-blur" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="10" />
+          <radialGradient id="onepct-bg-gold" cx="0.86" cy="0.12" r="0.3">
+            <stop offset="0" stopColor="#F59E0B" stopOpacity="0.3" />
+            <stop offset="1" stopColor="#F59E0B" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="onepct-arc-a" x1="420" y1="500" x2="760" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#3B82F6" stopOpacity="0" />
+            <stop offset="0.5" stopColor="#93C5FD" stopOpacity="0.9" />
+            <stop offset="1" stopColor="#60A5FA" stopOpacity="0" />
+          </linearGradient>
+          <filter id="onepct-blur" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="12" />
           </filter>
         </defs>
-        <path d="M40 400 C 60 220, 170 70, 330 0 L 600 0 L 600 400 Z" fill="url(#onepct-arc-fill)" />
-        <path d="M40 400 C 60 220, 170 70, 330 0" stroke="#3B82F6" strokeWidth="16" strokeOpacity="0.45" filter="url(#onepct-arc-blur)" />
-        <path d="M40 400 C 60 220, 170 70, 330 0" stroke="url(#onepct-arc)" strokeWidth="1.5" />
+        <rect width="1200" height="500" fill="url(#onepct-bg-blue)" />
+        <rect width="1200" height="500" fill="url(#onepct-bg-gold)" />
+        <path d="M420 520 C 470 300, 600 90, 800 -10" stroke="#3B82F6" strokeWidth="18" strokeOpacity="0.4" filter="url(#onepct-blur)" />
+        <path d="M420 520 C 470 300, 600 90, 800 -10" stroke="url(#onepct-arc-a)" strokeWidth="1.5" />
+        <path d="M520 520 C 580 330, 700 150, 900 40" stroke="url(#onepct-arc-a)" strokeWidth="1" strokeOpacity="0.5" />
       </svg>
-      <div aria-hidden="true" className="absolute -bottom-24 right-16 -z-10 h-40 w-[26rem] rounded-full bg-blue-600/20 blur-3xl" />
 
-      <div className="grid gap-12 p-8 sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16 lg:p-16">
-        <div className="space-y-6">
-          <p className="inline-flex items-center gap-2 text-sm text-slate-400">
+      <div className="grid items-center lg:grid-cols-[1fr_1.1fr]">
+        <div className="relative z-10 space-y-6 p-8 sm:p-12 lg:p-14">
+          <p className="inline-flex items-center gap-2 rounded-full border border-amber-200/30 px-4 py-1.5 text-sm text-amber-100/90">
             <Lock size={14} /> Invite only
           </p>
-          <h2 id="one-percent-heading" className="text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl">
-            The <span className="bg-gradient-to-r from-sky-300 to-indigo-300 bg-clip-text text-transparent">1%</span> Club
-          </h2>
+
+          <div className="space-y-4">
+            <div aria-hidden="true" className="flex items-center gap-3 text-amber-300">
+              <span className="h-px w-16 bg-gradient-to-r from-transparent to-amber-300/60" />
+              <Crown size={18} strokeWidth={1.5} />
+              <span className="h-px w-16 bg-gradient-to-l from-transparent to-amber-300/60" />
+            </div>
+            <h2 id="one-percent-heading" className="text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl">
+              The{' '}
+              <span className="bg-gradient-to-b from-amber-100 via-amber-300 to-amber-500 bg-clip-text text-transparent">1%</span>{' '}
+              Club
+            </h2>
+          </div>
+
           <p className="max-w-md text-base leading-relaxed text-slate-300">
-            There is no form and no fee. Teklozy invites the standout builders, creators and leaders from every club.
-            {progress > 0 ? ' You have started. Keep building.' : ' To be considered, join any club first.'}
+            A special circle for the top builders, creators and leaders across all clubs.{' '}
+            {progress > 0 ? (
+              'You have started. Keep making a real impact.'
+            ) : (
+              <>
+                To be considered, <span className="font-medium text-sky-300">join any club first</span> and make a real impact.
+              </>
+            )}
           </p>
 
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-            <button
-              type="button"
-              onClick={toggleWatch}
-              aria-pressed={watching}
-              className={`inline-flex min-h-[48px] items-center gap-2 rounded-full px-7 text-sm font-semibold transition-all active:scale-[0.98] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                watching
-                  ? 'border border-white/20 text-slate-200'
-                  : 'bg-[#F4F1EA] text-[#0A101C] shadow-[0_0_32px_rgba(244,241,234,0.28)] hover:bg-white'
-              }`}
-            >
-              {watching ? <Check size={16} /> : <Bell size={16} />}
-              {watching ? 'You are on the watchlist' : 'Notify me if I qualify'}
-            </button>
+          <button
+            type="button"
+            onClick={toggleWatch}
+            aria-pressed={watching}
+            className={`inline-flex min-h-[52px] items-center gap-2.5 rounded-full px-7 text-sm font-semibold transition-[transform,background-color] duration-150 ease-out active:scale-[0.97] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 ${
+              watching
+                ? 'border border-amber-200/40 text-amber-100'
+                : 'bg-gradient-to-r from-[#FBE3B5] to-[#F2C987] text-[#2A1B05] shadow-[0_0_34px_rgba(245,190,100,0.35)] hover:from-[#FFEBC6] hover:to-[#F6D294]'
+            }`}
+          >
+            {watching ? <Check size={16} /> : <Bell size={16} />}
+            {watching ? 'You are on the watchlist' : 'Notify me if I qualify'}
+            {!watching && <ArrowRight size={16} />}
+          </button>
 
-            <ul className="flex flex-wrap items-center gap-y-2 text-xs text-slate-400">
-              {perks.map((p, i) => (
-                <li key={p.label} className={`flex items-center gap-2 ${i > 0 ? 'ml-4 border-l border-white/10 pl-4' : ''}`}>
-                  <p.icon size={16} strokeWidth={1.5} className="text-slate-300" />
-                  {p.label}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="flex flex-wrap items-center gap-y-3 text-xs text-slate-300">
+            {perks.map((p, i) => (
+              <li key={p.label} className={`flex items-center gap-2 ${i > 0 ? 'ml-4 border-l border-white/15 pl-4' : ''}`}>
+                <p.icon size={17} strokeWidth={1.5} className="text-amber-300" />
+                {p.label}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="relative mx-auto w-full max-w-md py-8 [perspective:1400px]" aria-hidden="true">
-          <div className="pointer-events-none absolute inset-x-10 bottom-3 h-px bg-gradient-to-r from-transparent via-sky-200 to-transparent" />
-          <div className="pointer-events-none absolute inset-x-16 bottom-0 h-8 rounded-full bg-blue-500/40 blur-2xl" />
-
-          <div
-            className="absolute inset-x-2 inset-y-8 translate-x-6 translate-y-3 rounded-3xl border border-sky-200/20 bg-[#0E1729]/70"
-            style={{ transform: 'translate(22px, 10px) rotateY(-14deg) rotateX(6deg) rotateZ(-2deg)' }}
-          />
-
-          <div
-            className="relative flex aspect-[1.586/1] flex-col justify-between overflow-hidden rounded-3xl border border-sky-100/50 bg-gradient-to-br from-[#1C2A4A] via-[#111B32] to-[#0C1427] p-7"
-            style={{
-              transform: 'rotateY(-14deg) rotateX(6deg) rotateZ(-2deg)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), inset 0 0 40px rgba(59,130,246,0.12), 0 0 36px rgba(59,130,246,0.35), 0 30px 60px -28px rgba(0,0,0,0.95)',
-            }}
-          >
-            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 252" preserveAspectRatio="none" fill="none">
+        {/* Statue holding the membership card */}
+        <div className="relative mx-auto w-full max-w-xl px-6 pb-4 lg:absolute lg:inset-y-0 lg:right-0 lg:w-[56%] lg:max-w-none lg:p-0">
+          <div className="relative mx-auto aspect-[3/2] w-full lg:absolute lg:bottom-0 lg:right-0 lg:mx-0 lg:h-full lg:w-auto">
+            <svg aria-hidden="true" className="absolute inset-0 h-full w-full overflow-visible" viewBox="0 0 1536 1024" fill="none">
               <defs>
-                <linearGradient id="onepct-card-arc" x1="150" y1="252" x2="400" y2="110" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stopColor="#60A5FA" stopOpacity="0" />
-                  <stop offset="0.55" stopColor="#BFDBFE" stopOpacity="0.95" />
-                  <stop offset="1" stopColor="#93C5FD" stopOpacity="0.2" />
-                </linearGradient>
-                <filter id="onepct-card-blur" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="6" />
+                <filter id="onepct-ring-blur" x="-20%" y="-50%" width="140%" height="200%">
+                  <feGaussianBlur stdDeviation="14" />
                 </filter>
+                <radialGradient id="onepct-card-glow" cx="0.5" cy="0.5" r="0.5">
+                  <stop offset="0" stopColor="#F59E0B" stopOpacity="0.45" />
+                  <stop offset="1" stopColor="#F59E0B" stopOpacity="0" />
+                </radialGradient>
               </defs>
-              <path d="M150 252 C 210 170, 300 120, 400 110 L 400 252 Z" fill="#60A5FA" fillOpacity="0.05" />
-              <path d="M150 252 C 210 170, 300 120, 400 110" stroke="#3B82F6" strokeWidth="10" strokeOpacity="0.5" filter="url(#onepct-card-blur)" />
-              <path d="M150 252 C 210 170, 300 120, 400 110" stroke="url(#onepct-card-arc)" strokeWidth="1.6" />
+              <ellipse cx="1260" cy="210" rx="520" ry="330" fill="url(#onepct-card-glow)" />
+              <g transform="rotate(-10 1260 230)">
+                <ellipse cx="1260" cy="230" rx="430" ry="120" stroke="#F59E0B" strokeWidth="14" strokeOpacity="0.55" filter="url(#onepct-ring-blur)" />
+                <ellipse cx="1260" cy="230" rx="430" ry="120" stroke="#FDE3A8" strokeWidth="2.5" strokeOpacity="0.9" />
+              </g>
             </svg>
-            <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
-
-            <div className="relative flex items-start justify-between">
-              <p className="text-sm font-medium text-slate-100">Teklozy</p>
-              <Lock size={16} className="text-amber-300" />
-            </div>
-            <div className="relative space-y-3">
-              <div className="h-3 w-3/5 rounded-sm bg-white/25" />
-              <div className="h-3 w-2/5 rounded-sm bg-white/15" />
-            </div>
-            <div className="relative flex items-end justify-between">
-              <p className="font-mono text-2xl font-medium tracking-tight text-slate-50">1% Club</p>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-[10px] text-slate-400">No.</span>
-                <span
-                  className="block h-4 w-12 opacity-80"
-                  style={{ backgroundImage: 'repeating-linear-gradient(90deg, #cbd5e1 0 2px, transparent 2px 4px, #cbd5e1 4px 5px, transparent 5px 8px)' }}
-                />
-              </div>
-            </div>
+            <img
+              src={onePercentStatue}
+              alt=""
+              loading="lazy"
+              className="relative h-full w-full object-contain object-bottom drop-shadow-[0_24px_40px_rgba(0,0,0,0.55)]"
+            />
           </div>
         </div>
       </div>
