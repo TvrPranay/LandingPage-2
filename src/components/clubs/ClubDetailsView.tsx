@@ -1,29 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  ArrowLeft,
-  Sparkles,
+  BarChart3,
+  Bot,
+  Calendar,
   CheckCircle2,
   ChevronRight,
-  FolderGit2,
-  Layers,
-  HelpCircle,
-  ChevronDown,
-  ChevronUp,
+  Cloud,
+  Code2,
   Cpu,
-  Globe,
+  Database,
+  GitBranch,
+  Gamepad2,
+  Layers,
+  Lightbulb,
+  Palette,
+  PenTool,
   Rocket,
   ShieldCheck,
-  Code2,
-  Calendar,
-  Clock,
-  GraduationCap,
-  Award,
-  Users,
-  GitBranch,
+  Target,
   Terminal,
-  Database,
-  Palette,
-  ExternalLink,
+  TrendingUp,
+  Users,
+  Zap,
+  type LucideIcon,
 } from 'lucide-react';
 import { TeklozyClub, ClubApplication } from '../../types/clubs';
 import { ClubApplicationMultiStepModal } from './ClubApplicationMultiStepModal';
@@ -34,6 +33,34 @@ import {
   CyberClubVisual,
   InnovationClubVisual,
 } from '../ui/TechnologyVisuals';
+
+const u = (id: string, w: number, h: number) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${h}&crop=entropy&q=70`;
+const media = (hero: string, tracks: string[]) => ({
+  hero: u(hero, 1200, 900),
+  tracks: tracks.map((t) => u(t, 700, 500)),
+});
+const CLUB_MEDIA: Record<string, { hero: string; tracks: string[] }> = {
+  'dev-club': media('1522071820081-009f0129c71c', ['1555066931-4365d14bab8c', '1461749280684-dccba630e2f6', '1542831371-29b0f74f9713']),
+  'ai-data-club': media('1531482615713-2afd69097998', ['1485827404703-89b55fcc595e', '1677442136019-21780ecad995', '1518770660439-4636190af475']),
+  'design-creative-club': media('1572044162444-ad60f128bdea', ['1586717791821-3f44a563fa4c', '1561070791-2526d30994b5', '1558655146-d09347e92766']),
+  'cyber-cloud-club': media('1544197150-b99a580bb7a8', ['1550751827-4bd374c3f58b', '1558494949-ef010cbdcc31', '1451187580459-43490279c0fa']),
+  'innovation-club': media('1553877522-43269d4ea984', ['1517048676732-d65bc937f952', '1559136555-9303baea8ebd', '1563986768609-322da13575f3']),
+};
+const TRACK_ICONS: Record<string, LucideIcon[]> = {
+  'dev-club': [Code2, Database, GitBranch],
+  'ai-data-club': [Bot, Cpu, Database],
+  'design-creative-club': [PenTool, Palette, Layers],
+  'cyber-cloud-club': [ShieldCheck, Cloud, Terminal],
+  'innovation-club': [Lightbulb, Rocket, Users],
+};
+const CLUB_WORDS: Record<string, [string, string, string]> = {
+  'dev-club': ['Build', 'Learn', 'Collaborate'],
+  'ai-data-club': ['Explore', 'Train', 'Ship'],
+  'design-creative-club': ['Sketch', 'Make', 'Share'],
+  'cyber-cloud-club': ['Secure', 'Deploy', 'Defend'],
+  'innovation-club': ['Dream', 'Test', 'Launch'],
+};
 
 interface ClubDetailsViewProps {
   club: TeklozyClub;
@@ -51,7 +78,6 @@ export const ClubDetailsView: React.FC<ClubDetailsViewProps> = ({
   appliedStatus,
 }) => {
   const [showModal, setShowModal] = useState(false);
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   const renderClubVisual = (id: string) => {
     switch (id) {
@@ -184,417 +210,252 @@ export const ClubDetailsView: React.FC<ClubDetailsViewProps> = ({
 
   const tracks = getClubTracks(club.id);
 
-  const faqs = [
-    {
-      question: `Can beginners join ${club.name}?`,
-      answer:
-        'Yes, absolutely. The club uses tiered squads where beginners work on starter tickets with guidance from senior student leads and mentors.',
-    },
-    {
-      question: 'Is there any registration or membership fee?',
-      answer:
-        'Zero fees. Teklozy Student Clubs are 100% free for all college and university students.',
-    },
-    {
-      question: 'How much time does it take per week?',
-      answer:
-        'Only 3 to 5 hours per week. Sprints are asynchronous and designed to easily fit alongside your college classes and exam schedules.',
-    },
-    {
-      question: 'What do I get upon completing projects?',
-      answer:
-        'You receive verified digital membership credentials, public open-source Git commits on your GitHub profile, and portfolio artifacts.',
-    },
+    const media = CLUB_MEDIA[club.id] ?? CLUB_MEDIA['dev-club'];
+  const trackIcons = TRACK_ICONS[club.id] ?? TRACK_ICONS['dev-club'];
+  const words = CLUB_WORDS[club.id] ?? CLUB_WORDS['dev-club'];
+  const accent = club.accentColor || '#0088E0';
+  const tint = `${accent}1F`;
+  const tintStrong = `${accent}38`;
+
+  const heroRef = useRef<HTMLElement | null>(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([entry]) => setShowStickyBar(!entry.isIntersecting), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const applyButton = (tone: 'light' | 'dark' = 'dark', label = 'Join the club') => {
+    if (isApplied) {
+      return (
+        <div className="inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-white px-6 text-sm font-semibold text-emerald-700">
+          <CheckCircle2 size={16} />
+          <span>You're in · {appliedStatus || 'In review'}</span>
+        </div>
+      );
+    }
+    if (!club.isApplicationOpen) {
+      return (
+        <div className="inline-flex min-h-[48px] items-center rounded-xl bg-slate-200/70 px-6 text-sm font-semibold text-slate-600">
+          Back soon
+        </div>
+      );
+    }
+    return (
+      <button
+        type="button"
+        onClick={() => setShowModal(true)}
+        className={`group/btn inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl px-7 text-sm font-semibold transition-[transform,background-color] duration-150 ease-out active:scale-[0.97] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#10233F] ${
+          tone === 'light' ? 'bg-white text-[#10233F] hover:bg-slate-100' : 'bg-[#10233F] text-white hover:bg-[#1a3558]'
+        }`}
+      >
+        <span>{label}</span>
+        <ChevronRight size={16} className="transition-transform duration-150 ease-out group-hover/btn:translate-x-0.5 motion-reduce:transition-none" />
+      </button>
+    );
+  };
+
+  const Heading: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <h2 className="flex items-center gap-3 text-xl font-semibold tracking-tight text-[#10233F]">
+      <span aria-hidden="true" className="h-1 w-6 rounded-full" style={{ backgroundColor: accent }} />
+      {children}
+    </h2>
+  );
+
+  const facts = [
+    { icon: Users, value: `${club.activeMembersCount} members` },
+    { icon: BarChart3, value: club.difficulty ?? 'All levels' },
+    { icon: Calendar, value: club.isApplicationOpen ? `Closes ${club.applicationDeadline}` : 'Closed for now' },
+    { icon: Zap, value: 'Free' },
+  ];
+
+  const whyJoin = [
+    { icon: Users, label: 'Belong together' },
+    { icon: TrendingUp, label: 'Build confidence' },
+    { icon: Gamepad2, label: 'Take a break and enjoy' },
+    { icon: Target, label: 'Work with purpose' },
   ];
 
   return (
-    <div className="font-manrope text-slate-800 space-y-7 sm:space-y-8 pb-20 max-w-7xl mx-auto">
-      {/* Back button */}
-      <div>
-        <button
-          onClick={onBack}
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-[#0088E0] transition-colors cursor-pointer"
-        >
-          <ArrowLeft size={15} /> Back to Clubs
-        </button>
-      </div>
+    <div className="font-manrope text-slate-800 space-y-10 pb-28 max-w-6xl mx-auto">
+      <p className="text-sm text-slate-500">
+        <button onClick={onBack} className="hover:text-[#10233F] transition-colors cursor-pointer">Clubs</button>
+        <span className="px-2 text-slate-300">›</span>
+        <span className="text-slate-700">{club.name}</span>
+      </p>
 
-      {/* 1. HERO CARD (CLEAN WHITE THEME: 3D Emblem + Category + Title + Tagline + Apply Button + 4 Metric Chips) */}
-      <div className="bg-white rounded-[32px] sm:rounded-[36px] p-6 sm:p-8 shadow-[0_12px_45px_rgba(15,23,42,0.06)] border border-slate-100 space-y-6">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-start sm:items-center gap-4 sm:gap-5">
-            <div className="shrink-0 p-2 sm:p-2.5 rounded-2xl bg-slate-50 border border-slate-100 shadow-xs flex items-center justify-center">
-              {renderClubVisual(club.id)}
-            </div>
-            <div className="space-y-1">
-              <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-[#0088E0] bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-100 inline-block">
-                {club.category}
+      {/* Hero */}
+      <header ref={heroRef} className="relative pb-10">
+        <div className="grid overflow-hidden rounded-[2rem] lg:grid-cols-[1fr_1.1fr]" style={{ backgroundColor: tint }}>
+          <div className="flex flex-col justify-center gap-5 p-7 sm:p-10 lg:py-14">
+            <span className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#10233F]">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white">
+                {renderClubVisual(club.id)}
               </span>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#10233F] tracking-tight">
-                {club.name}
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-2xl leading-relaxed">
-                {club.tagline}
-              </p>
-            </div>
+              {club.name}
+            </span>
+            <h1 className="text-4xl font-bold leading-[1.05] tracking-tight text-[#10233F] sm:text-5xl">
+              {words[0]} <span style={{ color: accent }}>·</span> {words[1]} <span style={{ color: accent }}>·</span>{' '}
+              <span className="block">{words[2]}</span>
+            </h1>
+            <p className="max-w-sm text-base text-slate-700">{club.tagline}</p>
+            <div>{applyButton()}</div>
           </div>
-
-          <div className="shrink-0">
-            {isApplied ? (
-              <div className="px-6 py-3 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs sm:text-sm font-bold flex items-center gap-2">
-                <CheckCircle2 size={16} />
-                <span>Application Submitted • {appliedStatus || 'In Review'}</span>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowModal(true)}
-                className="px-8 py-3.5 rounded-full bg-[#0088E0] hover:bg-[#0077CC] text-white font-extrabold text-sm shadow-md hover:shadow-sky-300/40 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-              >
-                <span>Apply to Join Club</span>
-                <ChevronRight size={16} />
-              </button>
-            )}
+          <div className="relative min-h-[16rem] lg:min-h-[26rem]">
+            <img src={media.hero} alt="" className="absolute inset-0 h-full w-full object-cover" loading="eager" />
+            <span className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-[#10233F]">
+              <span className={`h-1.5 w-1.5 rounded-full ${club.isApplicationOpen ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+              {club.isApplicationOpen ? 'Open club' : 'Closed'}
+            </span>
           </div>
         </div>
 
-        {/* 4 Clean Metric Chips (Clean, high-contrast, professional) */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2 border-t border-slate-100">
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50/90 border border-slate-100 text-center hover:border-sky-200 transition-colors">
-            <span className="text-sm sm:text-base font-black text-slate-900 block">Batch 2026</span>
-            <span className="text-xs text-slate-400 font-medium mt-0.5 block">Active Cohort</span>
-          </div>
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50/90 border border-slate-100 text-center hover:border-sky-200 transition-colors">
-            <span className="text-sm sm:text-base font-black text-slate-900 block">All College Students</span>
-            <span className="text-xs text-slate-400 font-medium mt-0.5 block">1st–4th Year Eligible</span>
-          </div>
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50/90 border border-slate-100 text-center hover:border-sky-200 transition-colors">
-            <span className="text-sm sm:text-base font-black text-slate-900 block">3–5 Hours / Week</span>
-            <span className="text-xs text-slate-400 font-medium mt-0.5 block">Flexible Schedule</span>
-          </div>
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50/90 border border-slate-100 text-center hover:border-sky-200 transition-colors">
-            <span className="text-sm sm:text-base font-black text-slate-900 block">100% Free</span>
-            <span className="text-xs text-slate-400 font-medium mt-0.5 block">Verified Certificate</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. CORE FOCUS TRACKS (VISUAL SPECIALIZATION CARDS) */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-sky-50 text-[#0088E0] flex items-center justify-center font-bold border border-sky-100 shadow-xs shrink-0">
-            <Layers size={18} />
-          </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-black text-[#10233F] tracking-tight">
-              Focus Tracks
-            </h2>
-            <p className="text-xs text-slate-500 font-medium">
-              Pick a domain track to specialize and collaborate with peers
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-          {tracks.map((t, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs hover:border-sky-300 hover:shadow-md transition-all flex flex-col justify-between gap-4"
-            >
-              <div className="space-y-2">
-                <span className="inline-block px-2.5 py-0.5 rounded-full bg-sky-100/70 text-[#0088E0] text-[10px] font-black uppercase tracking-wider">
-                  {t.tag}
-                </span>
-                <h3 className="text-base sm:text-lg font-black text-[#10233F] leading-snug">
-                  {t.title}
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                  {t.pitch}
-                </p>
-              </div>
-
-              {/* Tech Badges */}
-              <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
-                {t.stack.map((item, sIdx) => (
-                  <span
-                    key={sIdx}
-                    className="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 text-[11px] font-semibold border border-slate-100"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
+        <dl className="absolute inset-x-4 bottom-0 grid grid-cols-2 gap-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.4)] sm:inset-x-8 sm:grid-cols-4 sm:gap-0 sm:divide-x sm:divide-slate-200">
+          {facts.map((f, i) => (
+            <div key={i} className="flex items-center gap-2.5 px-3">
+              <f.icon size={18} className="shrink-0 text-[#10233F]" />
+              <dd className="text-sm font-semibold text-[#10233F]">{f.value}</dd>
             </div>
           ))}
-        </div>
-      </div>
+        </dl>
+      </header>
 
-      {/* 3. ACTIVE CAPSTONE PROJECTS (WHAT THE SQUAD BUILDS) */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold border border-purple-100 shadow-xs shrink-0">
-            <FolderGit2 size={18} />
-          </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-black text-[#10233F] tracking-tight">
-              Active Capstone Projects
-            </h2>
-            <p className="text-xs text-slate-500 font-medium">
-              Real codebases and applications you will contribute to
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-          {club.sampleProjects.map((proj, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs hover:border-purple-300 hover:shadow-md transition-all flex flex-col justify-between gap-4"
+      {/* Why join */}
+      <section className="grid items-center gap-6 pt-10 lg:grid-cols-[1fr_2fr] sm:pt-6">
+        <h2 className="text-3xl font-bold leading-tight tracking-tight text-[#10233F] sm:text-4xl">
+          Grow beyond
+          <br />
+          classrooms
+        </h2>
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {whyJoin.map((w, i) => (
+            <li
+              key={i}
+              className="flex aspect-[4/3] flex-col items-center justify-center gap-2.5 rounded-2xl p-3 text-center sm:aspect-square"
+              style={{ backgroundColor: i % 2 ? tint : tintStrong }}
             >
-              {/* Project Window Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block" />
-                  </div>
-                  <span className="text-[11px] font-mono text-slate-400 ml-1">
-                    teklozy-project-0{idx + 1}.git
-                  </span>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Active Sprint
-                </span>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-base sm:text-lg font-black text-[#10233F] leading-snug">
-                  {proj.title}
-                </h3>
-                <p className="text-xs text-slate-600 font-normal leading-relaxed">
-                  {proj.description}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
-                {proj.tech.map((t, tIdx) => (
-                  <span
-                    key={tIdx}
-                    className="px-2.5 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[11px] font-mono font-semibold border border-purple-100"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
+              <w.icon size={26} className="text-[#10233F]" strokeWidth={1.75} />
+              <span className="text-sm font-semibold leading-snug text-[#10233F]">{w.label}</span>
+            </li>
           ))}
-        </div>
-      </div>
+        </ul>
+      </section>
 
-      {/* 4. WEEKLY ACTIVITIES & SPRINT RHYTHM (WHAT MEMBERS ACTUALLY DO) */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-100 shadow-xs shrink-0">
-            <Clock size={18} />
-          </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-black text-[#10233F] tracking-tight">
-              Weekly Squad Rhythm
-            </h2>
-            <p className="text-xs text-slate-500 font-medium">
-              Structured sessions designed around your college classes
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-          {club.exampleActivities.map((act, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs hover:border-emerald-300 transition-all flex flex-col justify-between gap-3"
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                    {act.frequency}
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-slate-900 leading-snug">
-                  {act.title}
-                </h3>
-                <p className="text-xs text-slate-600 font-normal leading-relaxed">
-                  {act.description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 5. SKILLS DEVELOPED (RESUME-READY CAPABILITIES) */}
-      <div className="bg-white rounded-[32px] sm:rounded-[36px] p-6 sm:p-8 border border-slate-100 shadow-[0_10px_35px_rgba(15,23,42,0.05)] space-y-5">
-        <div className="flex items-center gap-3 pb-2 border-b border-slate-100">
-          <div className="w-10 h-10 rounded-2xl bg-sky-50 text-[#0088E0] flex items-center justify-center font-bold shrink-0 border border-sky-100 shadow-xs">
-            <Award size={20} />
-          </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-black text-[#10233F] tracking-tight">
-              Verified Skills You Will Build
-            </h2>
-            <p className="text-xs text-slate-500 font-medium">
-              Practical competencies showcased on your verified digital credentials
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {club.skillsDeveloped.map((skill, idx) => (
-            <div
-              key={idx}
-              className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-100 flex items-center gap-3 hover:bg-sky-50/50 hover:border-sky-200 transition-colors"
-            >
-              <div className="w-6 h-6 rounded-full bg-sky-100 text-[#0088E0] flex items-center justify-center shrink-0">
-                <CheckCircle2 size={14} />
-              </div>
-              <span className="text-xs sm:text-sm font-bold text-slate-800">
-                {skill}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 6. HOW MEMBERSHIP WORKS (3-STEP CONNECTED ROADMAP) */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold border border-amber-100 shadow-xs shrink-0">
-            <Sparkles size={18} />
-          </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-black text-[#10233F] tracking-tight">
-              How Membership Works
-            </h2>
-            <p className="text-xs text-slate-500 font-medium">
-              3 simple steps from joining to shipping production code
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-2 hover:border-sky-300 transition-all">
-            <div className="w-8 h-8 rounded-full bg-sky-50 text-[#0088E0] font-black text-xs flex items-center justify-center border border-sky-100">
-              01
-            </div>
-            <h3 className="text-sm sm:text-base font-black text-slate-900">Apply in Minutes</h3>
-            <p className="text-xs text-slate-500 font-normal leading-relaxed">
-              Share your university info and pick your preferred domain track. Beginners are warmly welcome.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-2 hover:border-purple-300 transition-all">
-            <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-600 font-black text-xs flex items-center justify-center border border-purple-100">
-              02
-            </div>
-            <h3 className="text-sm sm:text-base font-black text-slate-900">Squad Assignment</h3>
-            <p className="text-xs text-slate-500 font-normal leading-relaxed">
-              Get matched into a 4–6 student squad with senior mentors to collaborate on real project tickets.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-2 hover:border-emerald-300 transition-all">
-            <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 font-black text-xs flex items-center justify-center border border-emerald-100">
-              03
-            </div>
-            <h3 className="text-sm sm:text-base font-black text-slate-900">Ship & Get Verified</h3>
-            <p className="text-xs text-slate-500 font-normal leading-relaxed">
-              Commit code, deploy production features, and earn verified digital credentials for your resume.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 7. FAQS (CLEAN WHITE ACCORDION BOX) */}
-      <div className="bg-white rounded-[32px] sm:rounded-[36px] p-6 sm:p-8 border border-slate-100 shadow-[0_10px_35px_rgba(15,23,42,0.05)] space-y-5">
-        <div className="flex items-center gap-3 pb-2 border-b border-slate-100">
-          <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold shrink-0 border border-amber-100 shadow-xs">
-            <HelpCircle size={20} />
-          </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-black text-[#10233F] tracking-tight">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xs text-slate-500 font-medium">
-              Everything you need to know about joining and participating
-            </p>
-          </div>
-        </div>
-
-        <div className="divide-y divide-slate-100">
-          {faqs.map((faq, idx) => {
-            const isOpen = openFaqIndex === idx;
+      {/* Find your people */}
+      <section className="space-y-5">
+        <Heading>Find your people</Heading>
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {tracks.map((t, idx) => {
+            const Icon = trackIcons[idx % trackIcons.length];
             return (
-              <div key={idx} className="py-3.5 first:pt-0 last:pb-0">
-                <button
-                  type="button"
-                  onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                  className="w-full flex items-center justify-between text-left font-bold text-slate-900 hover:text-[#0088E0] transition-colors gap-3 cursor-pointer py-1"
-                >
-                  <span className="text-xs sm:text-sm">{faq.question}</span>
-                  <span className="shrink-0 text-slate-400">
-                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              <li key={idx} className="group relative isolate h-56 overflow-hidden rounded-2xl bg-[#0B1220]">
+                <img
+                  src={media.tracks[idx % media.tracks.length]}
+                  alt=""
+                  loading="lazy"
+                  className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none"
+                />
+                <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0B1220]/85 via-[#0B1220]/15 to-transparent" />
+                <div className="absolute inset-x-4 bottom-4 flex items-center gap-3 text-white">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: accent }}>
+                    <Icon size={20} className="text-[#10233F]" />
                   </span>
-                </button>
-                {isOpen && (
-                  <p className="mt-2 text-slate-600 leading-relaxed text-xs font-normal">
-                    {faq.answer}
-                  </p>
-                )}
-              </div>
+                  <span className="text-base font-semibold leading-snug">{t.title}</span>
+                </div>
+              </li>
             );
           })}
+        </ul>
+      </section>
+
+      {/* Highlights */}
+      <section className="space-y-5">
+        <Heading>Our highlights</Heading>
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {club.sampleProjects.slice(0, 2).map((proj, idx) => (
+            <li
+              key={idx}
+              className="flex min-h-[10rem] flex-col justify-between gap-6 rounded-2xl p-6 transition-transform duration-200 ease-out hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+              style={{ backgroundColor: idx % 2 ? '#F4F6FA' : tint }}
+            >
+              <h3 className="max-w-xs text-xl font-semibold leading-snug text-[#10233F]">{proj.title}</h3>
+              <ul className="flex flex-wrap gap-1.5">
+                {proj.tech.slice(0, 3).map((t, tIdx) => (
+                  <li key={tIdx} className="rounded-full bg-white px-3 py-1 font-mono text-[11px] text-slate-700">
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Week + skills */}
+      <section className="grid gap-10 sm:grid-cols-2">
+        <div className="space-y-4">
+          <h2 className="flex items-center gap-2.5 text-lg font-semibold text-[#10233F]">
+            <Calendar size={20} style={{ color: accent }} /> A week in the club
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {club.exampleActivities.map((act, idx) => (
+              <li key={idx} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800">
+                {act.title}
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
+        <div className="space-y-4">
+          <h2 className="flex items-center gap-2.5 text-lg font-semibold text-[#10233F]">
+            <Layers size={20} style={{ color: accent }} /> Skills you'll build
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {club.skillsDeveloped.map((skill, idx) => (
+              <li key={idx} className="rounded-full px-4 py-2 text-sm font-medium text-[#10233F]" style={{ backgroundColor: tint }}>
+                {skill}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-      {/* 8. CLOSING HERO BANNER (REVERTED TO PREVIOUS CLEAN DEEP NAVY STYLE - ZERO MOUNTAIN GRAPHICS) */}
-      <div className="relative overflow-hidden rounded-[32px] sm:rounded-[36px] bg-gradient-to-r from-[#071326] via-[#0B1E38] to-[#0A264F] text-white p-7 sm:p-10 shadow-2xl border border-sky-500/20">
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-[#0088E0]/20 blur-3xl pointer-events-none" />
+      {/* Journey */}
+      <section className="flex flex-col gap-6 rounded-3xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8" style={{ backgroundColor: tint }}>
+        <h2 className="text-xl font-semibold text-[#10233F]">The journey</h2>
+        <ol className="flex flex-1 items-center justify-between gap-2 sm:max-w-xl">
+          {['Bring ideas', 'Build together', 'Ship real projects'].map((s, i) => (
+            <React.Fragment key={s}>
+              <li className="flex flex-col items-center gap-2 text-center">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#10233F] font-mono text-sm font-semibold text-white">
+                  {i + 1}
+                </span>
+                <span className="text-sm font-medium text-[#10233F]">{s}</span>
+              </li>
+              {i < 2 && <span aria-hidden="true" className="mb-6 h-px flex-1 border-t border-dashed border-slate-400" />}
+            </React.Fragment>
+          ))}
+        </ol>
+      </section>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1.5 max-w-xl">
-            <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-[#38BDF8]">
-              Teklozy Student Communities
-            </span>
-            <h3 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-              Ready to build software with {club.name}?
-            </h3>
-            <p className="text-slate-300 text-xs sm:text-sm font-medium">
-              Join fellow students across India. 100% free membership, peer collaboration, and verified project credentials.
-            </p>
-          </div>
+      {/* Closing */}
+      <section className="flex flex-col justify-between gap-5 rounded-3xl bg-[#10233F] p-6 text-white sm:flex-row sm:items-center sm:p-8">
+        <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          Ready to join <span style={{ color: accent }}>{club.name}</span>?
+        </h2>
+        <div className="shrink-0">{applyButton('light')}</div>
+      </section>
 
-          <div className="shrink-0">
-            {isApplied ? (
-              <div className="px-7 py-3.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 font-bold text-xs sm:text-sm flex items-center gap-2">
-                <CheckCircle2 size={16} />
-                <span>Application Submitted</span>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowModal(true)}
-                className="px-8 py-3.5 rounded-full bg-[#0088E0] hover:bg-[#0077CC] text-white font-extrabold text-xs sm:text-sm shadow-xl shadow-sky-500/30 transition-all flex items-center gap-2.5 hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <span>Apply to Join Club</span>
-                <ChevronRight size={16} />
-              </button>
-            )}
+      {showStickyBar && !isApplied && club.isApplicationOpen && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+            <p className="truncate text-sm font-semibold text-[#10233F]">{club.name}</p>
+            {applyButton('dark')}
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Multi-Step Modal */}
       {showModal && (
         <ClubApplicationMultiStepModal
           club={club}

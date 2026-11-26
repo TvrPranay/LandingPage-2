@@ -98,7 +98,7 @@ export const EventsPage: React.FC<EventsPageProps> = ({
         onOpenClubs={onOpenClubs}
       />
 
-      <main className="min-h-[75vh] px-4 sm:px-6 pt-24 sm:pt-28 pb-16 max-w-7xl mx-auto">
+      <main className="min-h-[75vh] px-4 sm:px-6 pt-20 sm:pt-[5.5rem] pb-16 max-w-7xl mx-auto">
         {subView === 'discover' && (
           <EventsLandingView
             events={events}

@@ -3,6 +3,11 @@ import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Users, ArrowRight, Lock, Check, Bell, Award, Zap, Star, Code2, Layers, PenTool, ShieldCheck, Lightbulb } from 'lucide-react';
 import { TeklozyClub } from '../../types/clubs';
+import devClubImg from '../../assets/images/clubs-imgs/dev-coding-club.png';
+import aiClubImg from '../../assets/images/clubs-imgs/aiclubimg.png';
+import designClubImg from '../../assets/images/clubs-imgs/design-club.png';
+import cyberCloudClubImg from '../../assets/images/clubs-imgs/cyber-cloud-club.png';
+import innovationClubImg from '../../assets/images/clubs-imgs/innovation-club.png';
 
 interface ClubsLandingViewProps {
   clubs: TeklozyClub[];
@@ -28,14 +33,13 @@ const CLUB_SHORT_NAMES: Record<string, string> = {
   'innovation-club': 'Innovation Club',
 };
 
-// Photos: Unsplash (free to use under the Unsplash License), cropped via URL params.
-const unsplash = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=800&h=480&crop=entropy&q=70`;
+// Club banners: AI-generated artwork created for Teklozy, bundled locally.
 const CLUB_IMAGES: Record<string, string> = {
-  'dev-club': unsplash('1555066931-4365d14bab8c'),
-  'ai-data-club': unsplash('1620712943543-bcc4688e7485'),
-  'design-creative-club': unsplash('1558655146-d09347e92766'),
-  'cyber-cloud-club': unsplash('1544197150-b99a580bb7a8'),
-  'innovation-club': unsplash('1517048676732-d65bc937f952'),
+  'dev-club': devClubImg,
+  'ai-data-club': aiClubImg,
+  'design-creative-club': designClubImg,
+  'cyber-cloud-club': cyberCloudClubImg,
+  'innovation-club': innovationClubImg,
 };
 
 const CLUB_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
@@ -242,8 +246,8 @@ export const ClubsLandingView: React.FC<ClubsLandingViewProps> = ({
   );
 
   return (
-    <div ref={root} className="font-manrope text-slate-800 space-y-16 sm:space-y-24 pb-16 max-w-7xl mx-auto">
-      <header className="space-y-8 pt-2">
+    <div ref={root} className="font-manrope text-slate-800 space-y-12 sm:space-y-16 pb-16 max-w-7xl mx-auto">
+      <header className="space-y-8">
         <div data-hero-fade className="flex items-center justify-between gap-4">
           <p className="text-sm font-semibold text-[#0088E0]">Student clubs</p>
           <button
@@ -279,7 +283,7 @@ export const ClubsLandingView: React.FC<ClubsLandingViewProps> = ({
         </div>
       </header>
 
-      <section id="club-catalog" aria-labelledby="catalog-title" className="scroll-mt-28 space-y-8">
+      <section id="club-catalog" aria-labelledby="catalog-title" className="scroll-mt-20 space-y-8">
         <style>{`@keyframes club-card-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:no-preference){.club-card{animation:club-card-in .7s cubic-bezier(.22,1,.36,1) backwards}}`}</style>
         <div className="space-y-2">
           <h2 id="catalog-title" className="text-3xl font-semibold tracking-tight text-[#10233F] sm:text-4xl">Pick your path</h2>
@@ -311,11 +315,6 @@ export const ClubsLandingView: React.FC<ClubsLandingViewProps> = ({
                       className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                     />
                   )}
-                  <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-br from-slate-950/80 via-slate-950/30 to-transparent" />
-                  <div className="absolute left-5 top-5 max-w-[60%]">
-                    <p className="text-sm font-semibold uppercase leading-snug tracking-wide text-white">{shortName}</p>
-                    <span className="mt-2 block h-[3px] w-10 rounded-full" style={{ backgroundColor: accent }} />
-                  </div>
                 </div>
 
                 <div className="flex flex-1 flex-col gap-4 px-3 pb-3 pt-4">

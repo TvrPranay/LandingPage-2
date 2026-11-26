@@ -38,7 +38,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .tk-site-nav > div:first-child { gap: 8px !important; }
   .tk-site-nav > div:first-child img { width: 36px; height: 42px; }
   .tk-site-nav > div:first-child span { font-size: 21px !important; }
-  .tk-team-hero { padding-top: 112px !important; }
+  .tk-team-hero { padding-top: 96px !important; }
   .tk-team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .tk-footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; row-gap: 30px; }
   .tk-footer-links > *:last-child { grid-column: 1 / -1; }
@@ -48,7 +48,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (max-width: 767px) {
-  html { scroll-padding-top: 84px; }
+  html { scroll-padding-top: 72px; }
   .tk-site-header { padding-top: 8px !important; }
   .tk-site-nav { min-height: 54px; border-radius: 22px !important; padding: 7px 12px !important; }
   .tk-site-nav > div:first-child img { width: 32px; height: 38px; }

@@ -28,7 +28,7 @@ const PageFrame: React.FC<PageProps & { children?: React.ReactNode }> = ({
       onOpenEvents={onOpenEvents}
       onOpenClubs={onOpenClubs}
     />
-    <main className="min-h-[72vh] px-4 sm:px-6 pt-32 pb-20">
+    <main className="min-h-[72vh] px-4 sm:px-6 pt-24 sm:pt-28 pb-20">
       <div className="max-w-5xl mx-auto">
         <button onClick={onNavigateHome} className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-[#0088E0] transition-colors">
           <ArrowRight className="rotate-180" size={16} /> Back to Teklozy

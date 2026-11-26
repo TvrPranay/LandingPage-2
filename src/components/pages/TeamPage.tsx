@@ -69,7 +69,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({
       />
 
       {/* 2. Hero Section: Direct Match with Reference Mockup */}
-      <section className="tk-team-hero relative overflow-hidden pt-32 pb-14 sm:pt-36 sm:pb-20 border-b border-slate-200/70 bg-gradient-to-b from-sky-50/40 via-white to-[#F8FAFC]">
+      <section className="tk-team-hero relative overflow-hidden pt-28 pb-14 sm:pt-32 sm:pb-20 border-b border-slate-200/70 bg-gradient-to-b from-sky-50/40 via-white to-[#F8FAFC]">
         <div className="max-w-[1540px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
             {/* Left Content */}
