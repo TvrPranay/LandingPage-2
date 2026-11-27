@@ -197,6 +197,19 @@ const OnePercentSection: React.FC<{ progress: number }> = ({ progress }) => {
   );
 };
 
+const renderClubVisual = (id: string) => {
+  const image = CLUB_IMAGES[id];
+  if (!image) return null;
+  return (
+    <img
+      src={image}
+      alt=""
+      loading="lazy"
+      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+    />
+  );
+};
+
 export const ClubsLandingView: React.FC<ClubsLandingViewProps> = ({
   clubs,
   onSelectClub,
@@ -292,14 +305,7 @@ export const ClubsLandingView: React.FC<ClubsLandingViewProps> = ({
                 className="club-card group relative flex flex-col rounded-3xl border border-slate-200 bg-white p-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.12)] transition-shadow duration-200 hover:shadow-[0_1px_2px_rgba(15,23,42,0.06),0_16px_32px_-12px_rgba(15,23,42,0.2)]"
               >
                 <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-slate-900">
-                  {image && (
-                    <img
-                      src={image}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                    />
-                  )}
+                  {renderClubVisual(club.id)}
                 </div>
 
                 <div className="flex flex-1 flex-col gap-4 px-3 pb-3 pt-4">

@@ -1,66 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
+  ArrowRight,
   BarChart3,
-  Bot,
+  BookOpen,
   Calendar,
   CheckCircle2,
-  ChevronRight,
-  Cloud,
-  Code2,
-  Cpu,
-  Database,
-  GitBranch,
+  FileText,
   Gamepad2,
+  GraduationCap,
   Layers,
-  Lightbulb,
-  Palette,
-  PenTool,
-  Rocket,
-  ShieldCheck,
+  MessageSquare,
+  Shield,
   Target,
-  Terminal,
+  Ticket,
   TrendingUp,
+  User,
   Users,
-  Zap,
-  type LucideIcon,
 } from 'lucide-react';
 import { TeklozyClub, ClubApplication } from '../../types/clubs';
 import { ClubApplicationMultiStepModal } from './ClubApplicationMultiStepModal';
 import {
-  DevClubVisual,
-  AiClubVisual,
-  DesignClubVisual,
-  CyberClubVisual,
-  InnovationClubVisual,
-} from '../ui/TechnologyVisuals';
-
-const u = (id: string, w: number, h: number) =>
-  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${h}&crop=entropy&q=70`;
-const media = (hero: string, tracks: string[]) => ({
-  hero: u(hero, 1200, 900),
-  tracks: tracks.map((t) => u(t, 700, 500)),
-});
-const CLUB_MEDIA: Record<string, { hero: string; tracks: string[] }> = {
-  'dev-club': media('1522071820081-009f0129c71c', ['1555066931-4365d14bab8c', '1461749280684-dccba630e2f6', '1542831371-29b0f74f9713']),
-  'ai-data-club': media('1531482615713-2afd69097998', ['1485827404703-89b55fcc595e', '1677442136019-21780ecad995', '1518770660439-4636190af475']),
-  'design-creative-club': media('1572044162444-ad60f128bdea', ['1586717791821-3f44a563fa4c', '1561070791-2526d30994b5', '1558655146-d09347e92766']),
-  'cyber-cloud-club': media('1544197150-b99a580bb7a8', ['1550751827-4bd374c3f58b', '1558494949-ef010cbdcc31', '1451187580459-43490279c0fa']),
-  'innovation-club': media('1553877522-43269d4ea984', ['1517048676732-d65bc937f952', '1559136555-9303baea8ebd', '1563986768609-322da13575f3']),
-};
-const TRACK_ICONS: Record<string, LucideIcon[]> = {
-  'dev-club': [Code2, Database, GitBranch],
-  'ai-data-club': [Bot, Cpu, Database],
-  'design-creative-club': [PenTool, Palette, Layers],
-  'cyber-cloud-club': [ShieldCheck, Cloud, Terminal],
-  'innovation-club': [Lightbulb, Rocket, Users],
-};
-const CLUB_WORDS: Record<string, [string, string, string]> = {
-  'dev-club': ['Build', 'Learn', 'Collaborate'],
-  'ai-data-club': ['Explore', 'Train', 'Ship'],
-  'design-creative-club': ['Sketch', 'Make', 'Share'],
-  'cyber-cloud-club': ['Secure', 'Deploy', 'Defend'],
-  'innovation-club': ['Dream', 'Test', 'Launch'],
-};
+  getClubConfig,
+  SHARED_SECTION_ASSETS,
+} from '../../data/clubDetailsData';
 
 interface ClubDetailsViewProps {
   club: TeklozyClub;
@@ -79,383 +41,537 @@ export const ClubDetailsView: React.FC<ClubDetailsViewProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
 
-  const renderClubVisual = (id: string) => {
-    switch (id) {
-      case 'dev-club':
-        return <DevClubVisual className="w-14 h-14 sm:w-16 sm:h-16" />;
-      case 'ai-data-club':
-        return <AiClubVisual className="w-14 h-14 sm:w-16 sm:h-16" />;
-      case 'design-creative-club':
-        return <DesignClubVisual className="w-14 h-14 sm:w-16 sm:h-16" />;
-      case 'cyber-cloud-club':
-        return <CyberClubVisual className="w-14 h-14 sm:w-16 sm:h-16" />;
-      case 'innovation-club':
-        return <InnovationClubVisual className="w-14 h-14 sm:w-16 sm:h-16" />;
-      default:
-        return <DevClubVisual className="w-14 h-14 sm:w-16 sm:h-16" />;
-    }
+  const domain = getClubConfig(club.id);
+  const heroImageSrc = domain.heroImage || club.imageUrl;
+  const ToolIcon = domain.toolIcon;
+
+  const joinAction = () => {
+    if (isApplied) return;
+    setShowModal(true);
   };
-
-  // Curated, punchy, visual domain tracks
-  const getClubTracks = (id: string) => {
-    switch (id) {
-      case 'ai-data-club':
-        return [
-          {
-            tag: 'TRACK 01',
-            title: 'LLMs & Autonomous Agents',
-            pitch: 'Build RAG pipelines, AI copilot assistants, and multi-agent workflows with tool use.',
-            stack: ['LangChain', 'FastAPI', 'Gemini / OpenAI', 'Qdrant Vector DB'],
-          },
-          {
-            tag: 'TRACK 02',
-            title: 'Machine Learning & Neural Nets',
-            pitch: 'Train predictive models, computer vision classifiers, and fine-tune transformers.',
-            stack: ['PyTorch', 'Python', 'Scikit-Learn', 'HuggingFace'],
-          },
-          {
-            tag: 'TRACK 03',
-            title: 'Data Pipelines & Analytics',
-            pitch: 'Ingest, clean, and transform large datasets with modern ETL and vector indices.',
-            stack: ['Pandas', 'Polars', 'PostgreSQL', 'DuckDB'],
-          },
-        ];
-      case 'dev-club':
-        return [
-          {
-            tag: 'TRACK 01',
-            title: 'Full-Stack Web Engineering',
-            pitch: 'Build responsive client applications with modern state and component architecture.',
-            stack: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS'],
-          },
-          {
-            tag: 'TRACK 02',
-            title: 'Backend Systems & APIs',
-            pitch: 'Design high-throughput REST and GraphQL endpoints with secure authentication.',
-            stack: ['Node.js', 'Go', 'PostgreSQL', 'Redis'],
-          },
-          {
-            tag: 'TRACK 03',
-            title: 'Open Source & Dev Tools',
-            pitch: 'Develop developer CLI tools, packages, and automated CI/CD workflows.',
-            stack: ['Docker', 'GitHub Actions', 'Linux', 'Vitest'],
-          },
-        ];
-      case 'design-creative-club':
-        return [
-          {
-            tag: 'TRACK 01',
-            title: 'UI/UX & Design Systems',
-            pitch: 'Craft component libraries, token kits, and accessible multi-brand design systems.',
-            stack: ['Figma', 'Auto-Layout', 'Design Tokens', 'WCAG AAA'],
-          },
-          {
-            tag: 'TRACK 02',
-            title: 'Product Prototyping',
-            pitch: 'Create interactive user flows, rapid wireframes, and conducted usability tests.',
-            stack: ['Interactive Prototypes', 'User Journeys', 'Wireframing', 'User Testing'],
-          },
-          {
-            tag: 'TRACK 03',
-            title: 'Brand Identity & Motion',
-            pitch: 'Design visual identities, product marketing graphics, and micro-animations.',
-            stack: ['Visual Branding', 'Typography', 'Motion Design', 'SVG Assets'],
-          },
-        ];
-      case 'cyber-cloud-club':
-        return [
-          {
-            tag: 'TRACK 01',
-            title: 'Cloud Infrastructure & DevOps',
-            pitch: 'Deploy containerized services with scalable cloud orchestration and monitoring.',
-            stack: ['Docker', 'Kubernetes', 'AWS', 'Terraform'],
-          },
-          {
-            tag: 'TRACK 02',
-            title: 'Web Application Security',
-            pitch: 'Audit codebases, patch vulnerabilities, and test against OWASP Top 10 exploits.',
-            stack: ['Pen-testing', 'OWASP Top 10', 'Burp Suite', 'Linux CLI'],
-          },
-          {
-            tag: 'TRACK 03',
-            title: 'Zero-Trust & Network Defense',
-            pitch: 'Configure firewall policies, secrets isolation, and encrypted network tunnels.',
-            stack: ['TLS 1.3', 'WireGuard', 'Secrets Vault', 'Prometheus'],
-          },
-        ];
-      case 'innovation-club':
-      default:
-        return [
-          {
-            tag: 'TRACK 01',
-            title: 'Tech Entrepreneurship & MVPs',
-            pitch: 'Validate problem statements, conduct customer discovery, and launch proof-of-concepts.',
-            stack: ['Lean Startup', 'Rapid Prototyping', 'Pitch Decks', 'Analytics'],
-          },
-          {
-            tag: 'TRACK 02',
-            title: 'Product Management & Metrics',
-            pitch: 'Define product roadmaps, write technical PRDs, and track north-star activation metrics.',
-            stack: ['PRD Writing', 'User Stories', 'Mixpanel', 'Roadmapping'],
-          },
-          {
-            tag: 'TRACK 03',
-            title: 'Growth & Go-To-Market',
-            pitch: 'Execute growth loops, campus community launches, and product marketing campaigns.',
-            stack: ['Growth Funnels', 'Product Marketing', 'SEO', 'Community'],
-          },
-        ];
-    }
-  };
-
-  const tracks = getClubTracks(club.id);
-
-    const media = CLUB_MEDIA[club.id] ?? CLUB_MEDIA['dev-club'];
-  const trackIcons = TRACK_ICONS[club.id] ?? TRACK_ICONS['dev-club'];
-  const words = CLUB_WORDS[club.id] ?? CLUB_WORDS['dev-club'];
-  const accent = club.accentColor || '#0088E0';
-  const tint = `${accent}1F`;
-  const tintStrong = `${accent}38`;
-
-  const heroRef = useRef<HTMLElement | null>(null);
-  const [showStickyBar, setShowStickyBar] = useState(false);
-  useEffect(() => {
-    const el = heroRef.current;
-    if (!el || typeof IntersectionObserver === 'undefined') return;
-    const io = new IntersectionObserver(([entry]) => setShowStickyBar(!entry.isIntersecting), { threshold: 0 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  const applyButton = (tone: 'light' | 'dark' = 'dark', label = 'Join the club') => {
-    if (isApplied) {
-      return (
-        <div className="inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-white px-6 text-sm font-semibold text-emerald-700">
-          <CheckCircle2 size={16} />
-          <span>You're in · {appliedStatus || 'In review'}</span>
-        </div>
-      );
-    }
-    if (!club.isApplicationOpen) {
-      return (
-        <div className="inline-flex min-h-[48px] items-center rounded-xl bg-slate-200/70 px-6 text-sm font-semibold text-slate-600">
-          Back soon
-        </div>
-      );
-    }
-    return (
-      <button
-        type="button"
-        onClick={() => setShowModal(true)}
-        className={`group/btn inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl px-7 text-sm font-semibold transition-[transform,background-color] duration-150 ease-out active:scale-[0.97] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#10233F] ${
-          tone === 'light' ? 'bg-white text-[#10233F] hover:bg-slate-100' : 'bg-[#10233F] text-white hover:bg-[#1a3558]'
-        }`}
-      >
-        <span>{label}</span>
-        <ChevronRight size={16} className="transition-transform duration-150 ease-out group-hover/btn:translate-x-0.5 motion-reduce:transition-none" />
-      </button>
-    );
-  };
-
-  const Heading: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <h2 className="flex items-center gap-3 text-xl font-semibold tracking-tight text-[#10233F]">
-      <span aria-hidden="true" className="h-1 w-6 rounded-full" style={{ backgroundColor: accent }} />
-      {children}
-    </h2>
-  );
-
-  const facts = [
-    { icon: Users, value: `${club.activeMembersCount} members` },
-    { icon: BarChart3, value: club.difficulty ?? 'All levels' },
-    { icon: Calendar, value: club.isApplicationOpen ? `Closes ${club.applicationDeadline}` : 'Closed for now' },
-    { icon: Zap, value: 'Free' },
-  ];
-
-  const whyJoin = [
-    { icon: Users, label: 'Belong together' },
-    { icon: TrendingUp, label: 'Build confidence' },
-    { icon: Gamepad2, label: 'Take a break and enjoy' },
-    { icon: Target, label: 'Work with purpose' },
-  ];
 
   return (
-    <div className="font-manrope text-slate-800 space-y-10 pb-28 max-w-6xl mx-auto">
-      <p className="text-sm text-slate-500">
-        <button onClick={onBack} className="hover:text-[#10233F] transition-colors cursor-pointer">Clubs</button>
-        <span className="px-2 text-slate-300">›</span>
-        <span className="text-slate-700">{club.name}</span>
-      </p>
+    <div className="font-manrope text-slate-800 pb-24 max-w-7xl mx-auto space-y-12 sm:space-y-14">
+      {/* Top Breadcrumb Navigation */}
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 pt-1">
+        <button
+          type="button"
+          onClick={onBack}
+          className="hover:text-[#10233F] transition-colors cursor-pointer flex items-center gap-1 font-medium"
+        >
+          <span>← Clubs</span>
+        </button>
+        <span className="text-slate-300">›</span>
+        <span className="font-semibold text-slate-800 truncate">{club.name}</span>
+      </nav>
 
-      {/* Hero */}
-      <header ref={heroRef} className="relative pb-10">
-        <div className="grid overflow-hidden rounded-[2rem] lg:grid-cols-[1fr_1.1fr]" style={{ backgroundColor: tint }}>
-          <div className="flex flex-col justify-center gap-5 p-7 sm:p-10 lg:py-14">
-            <span className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#10233F]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white">
-                {renderClubVisual(club.id)}
-              </span>
+      {/* ========================================================= */}
+      {/* SECTION 01 — CLUB HERO (Single Primary CTA, Quiet Chrome) */}
+      {/* ========================================================= */}
+      <header className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          {/* Left Column: Identity & Primary CTA */}
+          <div className="lg:col-span-5 space-y-5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50/80 px-3.5 py-1 text-xs font-bold text-[#0088E0] shadow-2xs">
+              <ToolIcon size={14} className="shrink-0" />
+              <span>{domain.badgeLabel}</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-black tracking-tight text-[#10233F] leading-[1.08]">
               {club.name}
-            </span>
-            <h1 className="text-4xl font-bold leading-[1.05] tracking-tight text-[#10233F] sm:text-5xl">
-              {words[0]} <span style={{ color: accent }}>·</span> {words[1]} <span style={{ color: accent }}>·</span>{' '}
-              <span className="block">{words[2]}</span>
             </h1>
-            <p className="max-w-sm text-base text-slate-700">{club.tagline}</p>
-            <div>{applyButton()}</div>
+
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+              {club.tagline ||
+                'A hands-on community for designers, creators, and visual thinkers to learn, collaborate, and ship real work.'}
+            </p>
+
+            <div className="flex items-center gap-3 pt-2">
+              {isApplied ? (
+                <div className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-7 text-sm font-bold text-emerald-700 shadow-xs">
+                  <CheckCircle2 size={16} />
+                  <span>You're in · {appliedStatus || 'In review'}</span>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={joinAction}
+                  className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-[#0088E0] px-8 text-sm font-bold text-white transition-all duration-150 ease-out hover:bg-[#0077CC] hover:shadow-lg hover:shadow-sky-500/25 active:scale-[0.98] cursor-pointer"
+                >
+                  Join the Club <ArrowRight size={16} />
+                </button>
+              )}
+            </div>
           </div>
-          <div className="relative min-h-[16rem] lg:min-h-[26rem]">
-            <img src={media.hero} alt="" className="absolute inset-0 h-full w-full object-cover" loading="eager" />
-            <span className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-[#10233F]">
-              <span className={`h-1.5 w-1.5 rounded-full ${club.isApplicationOpen ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-              {club.isApplicationOpen ? 'Open club' : 'Closed'}
-            </span>
+
+          {/* Right Column: Hero Visual with Domain Badges */}
+          <div className="lg:col-span-7 relative">
+            <div className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-900 shadow-xl aspect-[16/10] sm:aspect-[16/9.5] group">
+              <img
+                src={heroImageSrc}
+                alt={`${club.name} community collaboration`}
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                loading="eager"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none"
+              />
+
+              <div className="absolute top-4 right-4 flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-slate-950/75 border border-white/15 px-3 py-1.5 backdrop-blur-md shadow-lg">
+                  {domain.toolBadges.map((tool) => (
+                    <span
+                      key={tool}
+                      className="text-[11px] font-bold text-white/90 px-1.5 py-0.5 rounded bg-white/10"
+                    >
+                      {tool}
+                    </span>
+                  ))}
+                </div>
+                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#0088E0] to-[#0055AA] border border-white/30 flex items-center justify-center text-white shadow-lg shadow-sky-500/40">
+                  <ToolIcon size={20} />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <dl className="absolute inset-x-4 bottom-0 grid grid-cols-2 gap-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.4)] sm:inset-x-8 sm:grid-cols-4 sm:gap-0 sm:divide-x sm:divide-slate-200">
-          {facts.map((f, i) => (
-            <div key={i} className="flex items-center gap-2.5 px-3">
-              <f.icon size={18} className="shrink-0 text-[#10233F]" />
-              <dd className="text-sm font-semibold text-[#10233F]">{f.value}</dd>
+        {/* Hero Key Stats Strip */}
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+          <div className="flex items-center gap-3 pt-2 sm:pt-0">
+            <div className="flex -space-x-2 shrink-0">
+              {SHARED_SECTION_ASSETS.communityAvatars.map((av, i) => (
+                <img
+                  key={i}
+                  src={av}
+                  alt=""
+                  className="h-8 w-8 rounded-full border-2 border-white object-cover"
+                />
+              ))}
             </div>
-          ))}
-        </dl>
+            <div>
+              <p className="text-sm font-bold text-[#10233F] leading-tight">
+                {club.activeMembersCount || 28} Active Members
+              </p>
+              <p className="text-xs font-semibold text-emerald-600">+5 this week</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 sm:pl-6 pt-2 sm:pt-0">
+            <div className="h-9 w-9 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-[#10233F] shrink-0">
+              <BarChart3 size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#10233F] leading-tight">{club.difficulty || 'Moderate Level'}</p>
+              <p className="text-xs text-slate-500">Skill-building &amp; real projects</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 sm:pl-6 pt-2 sm:pt-0">
+            <div className="h-9 w-9 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-[#10233F] shrink-0">
+              <Calendar size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#10233F] leading-tight">
+                {club.applicationDeadline || '15 Dec, 2026'}
+              </p>
+              <p className="text-xs text-slate-500">Next Event</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 sm:pl-6 pt-2 sm:pt-0">
+            <div className="h-9 w-9 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-[#10233F] shrink-0">
+              <Ticket size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#10233F] leading-tight">Free to Join</p>
+              <p className="text-xs text-slate-500">No membership fees</p>
+            </div>
+          </div>
+        </div>
       </header>
 
-      {/* Why join */}
-      <section className="grid items-center gap-6 pt-10 lg:grid-cols-[1fr_2fr] sm:pt-6">
-        <h2 className="text-3xl font-bold leading-tight tracking-tight text-[#10233F] sm:text-4xl">
-          Grow beyond
-          <br />
-          classrooms
-        </h2>
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {whyJoin.map((w, i) => (
-            <li
-              key={i}
-              className="flex aspect-[4/3] flex-col items-center justify-center gap-2.5 rounded-2xl p-3 text-center sm:aspect-square"
-              style={{ backgroundColor: i % 2 ? tint : tintStrong }}
-            >
-              <w.icon size={26} className="text-[#10233F]" strokeWidth={1.75} />
-              <span className="text-sm font-semibold leading-snug text-[#10233F]">{w.label}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/* ========================================================= */}
+      {/* SECTION 02 — CLUB ACTIVITIES & EVENTS                     */}
+      {/* ========================================================= */}
+      <section className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span aria-hidden="true" className="h-1.5 w-6 rounded-full bg-[#0088E0]" />
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#10233F]">
+              Club Activities &amp; Events
+            </h2>
+          </div>
+          <p className="text-sm font-medium text-slate-500">
+            Workshops, design sprints, creative challenges, and real-world projects.
+          </p>
+        </div>
 
-      {/* Find your people */}
-      <section className="space-y-5">
-        <Heading>Find your people</Heading>
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {tracks.map((t, idx) => {
-            const Icon = trackIcons[idx % trackIcons.length];
-            return (
-              <li key={idx} className="group relative isolate h-56 overflow-hidden rounded-2xl bg-[#0B1220]">
-                <img
-                  src={media.tracks[idx % media.tracks.length]}
-                  alt=""
-                  loading="lazy"
-                  className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none"
-                />
-                <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0B1220]/85 via-[#0B1220]/15 to-transparent" />
-                <div className="absolute inset-x-4 bottom-4 flex items-center gap-3 text-white">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: accent }}>
-                    <Icon size={20} className="text-[#10233F]" />
-                  </span>
-                  <span className="text-base font-semibold leading-snug">{t.title}</span>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
-      {/* Highlights */}
-      <section className="space-y-5">
-        <Heading>Our highlights</Heading>
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {club.sampleProjects.slice(0, 2).map((proj, idx) => (
-            <li
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {domain.activities.map((act, idx) => (
+            <div
               key={idx}
-              className="flex min-h-[10rem] flex-col justify-between gap-6 rounded-2xl p-6 transition-transform duration-200 ease-out hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-              style={{ backgroundColor: idx % 2 ? '#F4F6FA' : tint }}
+              className="group rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 flex flex-col justify-between hover:border-sky-300 hover:shadow-lg hover:shadow-sky-500/10 transition-all duration-200"
             >
-              <h3 className="max-w-xs text-xl font-semibold leading-snug text-[#10233F]">{proj.title}</h3>
-              <ul className="flex flex-wrap gap-1.5">
-                {proj.tech.slice(0, 3).map((t, tIdx) => (
-                  <li key={tIdx} className="rounded-full bg-white px-3 py-1 font-mono text-[11px] text-slate-700">
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-      </section>
+              <div>
+                <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl bg-slate-900 mb-3.5 group-hover:shadow-sm transition-all">
+                  <img
+                    src={act.image}
+                    alt={act.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
+                </div>
 
-      {/* Week + skills */}
-      <section className="grid gap-10 sm:grid-cols-2">
-        <div className="space-y-4">
-          <h2 className="flex items-center gap-2.5 text-lg font-semibold text-[#10233F]">
-            <Calendar size={20} style={{ color: accent }} /> A week in the club
-          </h2>
-          <ul className="flex flex-wrap gap-2">
-            {club.exampleActivities.map((act, idx) => (
-              <li key={idx} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800">
-                {act.title}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="space-y-4">
-          <h2 className="flex items-center gap-2.5 text-lg font-semibold text-[#10233F]">
-            <Layers size={20} style={{ color: accent }} /> Skills you'll build
-          </h2>
-          <ul className="flex flex-wrap gap-2">
-            {club.skillsDeveloped.map((skill, idx) => (
-              <li key={idx} className="rounded-full px-4 py-2 text-sm font-medium text-[#10233F]" style={{ backgroundColor: tint }}>
-                {skill}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+                <h3 className="text-base sm:text-lg font-bold text-[#10233F] group-hover:text-[#0088E0] transition-colors leading-snug">
+                  {act.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                  {act.description}
+                </p>
+              </div>
 
-      {/* Journey */}
-      <section className="flex flex-col gap-6 rounded-3xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8" style={{ backgroundColor: tint }}>
-        <h2 className="text-xl font-semibold text-[#10233F]">The journey</h2>
-        <ol className="flex flex-1 items-center justify-between gap-2 sm:max-w-xl">
-          {['Bring ideas', 'Build together', 'Ship real projects'].map((s, i) => (
-            <React.Fragment key={s}>
-              <li className="flex flex-col items-center gap-2 text-center">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#10233F] font-mono text-sm font-semibold text-white">
-                  {i + 1}
+              <div className="flex items-center justify-between pt-4 mt-3 border-t border-slate-100">
+                <span
+                  className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${
+                    act.badgeColor === 'green'
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      : 'bg-sky-50 text-sky-700 border border-sky-200'
+                  }`}
+                >
+                  {act.badge}
                 </span>
-                <span className="text-sm font-medium text-[#10233F]">{s}</span>
-              </li>
-              {i < 2 && <span aria-hidden="true" className="mb-6 h-px flex-1 border-t border-dashed border-slate-400" />}
-            </React.Fragment>
+                <span className="text-slate-400 group-hover:text-[#0088E0] group-hover:translate-x-1 transition-all">
+                  →
+                </span>
+              </div>
+            </div>
           ))}
-        </ol>
+        </div>
       </section>
 
-      {/* Closing */}
-      <section className="flex flex-col justify-between gap-5 rounded-3xl bg-[#10233F] p-6 text-white sm:flex-row sm:items-center sm:p-8">
-        <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Ready to join <span style={{ color: accent }}>{club.name}</span>?
-        </h2>
-        <div className="shrink-0">{applyButton('light')}</div>
-      </section>
+      {/* ========================================================= */}
+      {/* SECTION 03 — NETWORK & TEAM (Balanced Composition)        */}
+      {/* ========================================================= */}
+      <section className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          {/* Left Column: Heading, Subtitle & 3 Value Pills */}
+          <div className="lg:col-span-5 space-y-5">
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2">
+                <span aria-hidden="true" className="h-1.5 w-6 rounded-full bg-[#0088E0]" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#0088E0]">
+                  Network &amp; Team
+                </span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight text-[#10233F] leading-tight">
+                {domain.networkHeadline}
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                {domain.networkDescription}
+              </p>
+            </div>
 
-      {showStickyBar && !isApplied && club.isApplicationOpen && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur-sm">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-            <p className="truncate text-sm font-semibold text-[#10233F]">{club.name}</p>
-            {applyButton('dark')}
+            <div className="space-y-3 pt-1">
+              {[
+                { icon: Users, text: domain.networkPills[0] },
+                { icon: GraduationCap, text: domain.networkPills[1] },
+                { icon: Layers, text: domain.networkPills[2] },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-3.5 p-3.5 rounded-2xl border border-slate-200/80 bg-white shadow-2xs hover:border-sky-300 hover:shadow-xs transition-all"
+                >
+                  <div className="h-10 w-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-[#0088E0] shrink-0">
+                    <item.icon size={20} />
+                  </div>
+                  <span className="text-sm font-bold text-slate-800 leading-snug">
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Column: Collaborative Team Scene with Floating Badges */}
+          <div className="lg:col-span-7 relative">
+            <div className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-900 shadow-xl aspect-[16/11] group">
+              <img
+                src={SHARED_SECTION_ASSETS.teamCollaborationImg}
+                alt={`${club.name} team collaboration`}
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                loading="lazy"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none"
+              />
+
+              <div className="absolute top-5 left-5 inline-flex items-center gap-2 rounded-full bg-white/95 backdrop-blur-md px-3.5 py-1.5 shadow-lg border border-slate-200/80 text-xs font-bold text-slate-800">
+                <Layers size={14} className="text-[#0088E0]" />
+                <span>{domain.networkCallouts[0]}</span>
+              </div>
+
+              <div className="absolute top-5 right-5 inline-flex items-center gap-2 rounded-full bg-white/95 backdrop-blur-md px-3.5 py-1.5 shadow-lg border border-slate-200/80 text-xs font-bold text-slate-800">
+                <MessageSquare size={14} className="text-[#0088E0]" />
+                <span>{domain.networkCallouts[1]}</span>
+              </div>
+
+              <div className="absolute bottom-5 right-5 inline-flex items-center gap-2 rounded-full bg-white/95 backdrop-blur-md px-3.5 py-1.5 shadow-lg border border-slate-200/80 text-xs font-bold text-slate-800">
+                <BookOpen size={14} className="text-[#0088E0]" />
+                <span>{domain.networkCallouts[2]}</span>
+              </div>
+            </div>
           </div>
         </div>
-      )}
+      </section>
 
+      {/* ========================================================= */}
+      {/* SECTION 04 — ELIGIBILITY & REGULATIONS (Marble Guardian)  */}
+      {/* ========================================================= */}
+      <section className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 lg:p-10 shadow-xs">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Left Column: Marble Guardian with Blue Shield */}
+          <div className="lg:col-span-5 flex justify-center relative">
+            <div className="relative w-full max-w-sm aspect-square flex items-center justify-center rounded-3xl overflow-hidden">
+              <img
+                src={SHARED_SECTION_ASSETS.eligibilityStatueImg}
+                alt="Community standards and integrity"
+                className="relative z-10 h-72 sm:h-80 w-auto object-contain drop-shadow-[0_16px_32px_rgba(15,23,42,0.18)] transition-transform duration-500 hover:scale-[1.02]"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Heading, Subtitle & 2x2 Grid of 4 Cards */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span aria-hidden="true" className="h-1.5 w-6 rounded-full bg-[#0088E0]" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#0088E0]">
+                  Eligibility &amp; Regulations
+                </span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[#10233F]">
+                Simple, Fair &amp; Inclusive
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                A clear framework to keep the club welcoming, respectful, and productive for everyone.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { icon: User, title: 'Open to all students' },
+                { icon: FileText, title: 'Follow the club code of conduct' },
+                { icon: Users, title: 'Collaborate respectfully and inclusively' },
+                { icon: Shield, title: 'Adhere to institute guidelines' },
+              ].map((card, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-2xl border border-slate-200/90 bg-white hover:border-sky-300 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3.5"
+                >
+                  <div className="h-10 w-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-[#0088E0] shrink-0">
+                    <card.icon size={20} />
+                  </div>
+                  <span className="text-sm font-bold text-slate-800 leading-snug">
+                    {card.title}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 05 — WHY JOIN (Belonging Card with Full BG Image) */}
+      {/* ========================================================= */}
+      <section className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+          {/* Left Column: Heading & Subtitle */}
+          <div className="lg:col-span-4 flex flex-col justify-center space-y-3">
+            <div className="flex items-center gap-2">
+              <span aria-hidden="true" className="h-1.5 w-6 rounded-full bg-[#0088E0]" />
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0088E0]">Why Join</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[#10233F]">
+              {domain.whyJoinHeadline}
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal max-w-sm">
+              {domain.whyJoinTagline}
+            </p>
+          </div>
+
+          {/* Middle Column: Belonging Card (Full Background Image matching Reference) */}
+          <div className="lg:col-span-4">
+            <div className="relative rounded-3xl overflow-hidden shadow-lg h-full min-h-[380px] p-6 sm:p-7 flex flex-col justify-between text-white border border-slate-200/30 group">
+              {/* Full Background Image */}
+              <img
+                src={SHARED_SECTION_ASSETS.belongingSummitImg}
+                alt="Community belonging summit"
+                className="absolute inset-0 w-full h-full object-cover object-bottom transition-transform duration-700 ease-out group-hover:scale-105"
+                loading="lazy"
+              />
+              {/* Subtle upper gradient overlay to guarantee maximum text legibility */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-b from-[#0B1E48]/80 via-[#0B1E48]/30 to-transparent pointer-events-none"
+              />
+
+              {/* Header Content directly over image background */}
+              <div className="space-y-2 relative z-10 max-w-[260px]">
+                <div className="inline-flex h-9 w-9 rounded-xl bg-white/20 border border-white/30 items-center justify-center text-white backdrop-blur-md shadow-xs">
+                  <Users size={18} />
+                </div>
+                <h3 className="text-2xl font-black tracking-tight text-white leading-tight">Belonging</h3>
+                <p className="text-xs sm:text-sm text-blue-50/90 leading-relaxed font-normal">
+                  {domain.belongingSubtext}
+                </p>
+              </div>
+
+              {/* Bottom Spacer to let mountain summit and flag breathe */}
+              <div className="relative z-10 pt-24" />
+            </div>
+          </div>
+
+          {/* Right Column: 3 Horizontal Stacked Cards with Clean Visual Assets */}
+          <div className="lg:col-span-4 flex flex-col justify-between gap-4">
+            {/* Card 1: Enjoyment with Golden Trophy */}
+            <div className="flex-1 rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 flex items-center justify-between gap-4 shadow-2xs hover:border-sky-300 transition-all group">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Gamepad2 size={16} className="text-[#0088E0]" />
+                  <h3 className="text-base font-bold text-[#10233F]">Enjoyment</h3>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  {domain.enjoymentSubtext}
+                </p>
+              </div>
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center">
+                <img
+                  src={SHARED_SECTION_ASSETS.trophyImg}
+                  alt="Enjoyment trophy"
+                  className="h-full w-full object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+
+            {/* Card 2: Growth with Growth Chart */}
+            <div className="flex-1 rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 flex items-center justify-between gap-4 shadow-2xs hover:border-sky-300 transition-all group">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <TrendingUp size={16} className="text-[#0088E0]" />
+                  <h3 className="text-base font-bold text-[#10233F]">Growth</h3>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  {domain.growthSubtext}
+                </p>
+              </div>
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center">
+                <img
+                  src={SHARED_SECTION_ASSETS.growthImg}
+                  alt="Growth chart"
+                  className="h-full w-full object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+
+            {/* Card 3: Purpose with Bullseye Target */}
+            <div className="flex-1 rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 flex items-center justify-between gap-4 shadow-2xs hover:border-sky-300 transition-all group">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Target size={16} className="text-[#0088E0]" />
+                  <h3 className="text-base font-bold text-[#10233F]">Purpose</h3>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  {domain.purposeSubtext}
+                </p>
+              </div>
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center">
+                <img
+                  src={SHARED_SECTION_ASSETS.purposeImg}
+                  alt="Purpose target"
+                  className="h-full w-full object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 06 — JOIN CLUB CTA BANNER                         */}
+      {/* ========================================================= */}
+      <section className="relative rounded-3xl bg-gradient-to-r from-[#09152C] via-[#0E2044] to-[#0A1835] border border-blue-500/25 p-6 sm:p-8 lg:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl overflow-hidden">
+        {/* Left Side: Users Icon Box + Divider + Heading & Subtitle */}
+        <div className="flex items-center gap-5 relative z-10">
+          <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/15 flex items-center justify-center text-white shrink-0 shadow-md">
+            <Users size={26} />
+          </div>
+          <div className="h-12 w-px bg-white/15 hidden sm:block" />
+          <div className="space-y-1">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+              Ready to Create Together?
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed max-w-xl">
+              Join the club, collaborate on real projects, and grow with a community that creates, learns, and ships.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Side: Join the Club Button */}
+        <div className="shrink-0 relative z-10 w-full sm:w-auto flex justify-start sm:justify-end">
+          {isApplied ? (
+            <div className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-emerald-500/20 border border-emerald-400/40 px-7 text-sm font-bold text-emerald-300">
+              <CheckCircle2 size={16} />
+              <span>You're in · {appliedStatus || 'In review'}</span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={joinAction}
+              className="inline-flex min-h-[50px] w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#0088E0] px-8 text-sm sm:text-base font-bold text-white transition-all duration-150 ease-out hover:bg-[#0077CC] hover:shadow-lg hover:shadow-sky-500/30 active:scale-[0.98] cursor-pointer whitespace-nowrap"
+            >
+              Join the Club <ArrowRight size={18} />
+            </button>
+          )}
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* MOBILE-ONLY STICKY REGISTER OPTION (ACCESSIBILITY)        */}
+      {/* ========================================================= */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
+          <div>
+            <p className="font-bold text-slate-900 text-sm tracking-tight leading-tight truncate max-w-[190px]">
+              {club.name}
+            </p>
+            <p className="text-xs text-slate-500 mt-0.5">Free to join · {club.difficulty || 'All levels'}</p>
+          </div>
+          {isApplied ? (
+            <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-700">
+              <CheckCircle2 size={14} /> Joined
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={joinAction}
+              className="px-6 py-2.5 rounded-full bg-[#0088E0] text-white text-sm font-bold tracking-tight hover:bg-[#0077CC] active:scale-[0.98] transition-all shadow-sm cursor-pointer whitespace-nowrap"
+            >
+              Join Club
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Multi-step Application Modal */}
       {showModal && (
         <ClubApplicationMultiStepModal
           club={club}
