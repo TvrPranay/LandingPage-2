@@ -115,6 +115,7 @@ export const EventsPage: React.FC<EventsPageProps> = ({
             onBack={() => setSubView('discover')}
             onRegisteredSuccess={handleRegistrationSuccess}
             isRegistered={registeredEventIds.includes(activeEvent.id)}
+            onOpenContact={onOpenContact}
           />
         )}
 

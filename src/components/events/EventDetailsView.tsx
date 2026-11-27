@@ -2,32 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ArrowLeft,
+  ArrowRight,
+  Award,
   Calendar,
-  Layers,
-  ChevronDown,
-  ChevronUp,
-  Share2,
-  ChevronRight,
+  Check,
   CheckCircle2,
+  ChevronDown,
+  Clock,
+  ExternalLink,
+  FileText,
+  Flag,
+  Gift,
+  Globe,
+  HelpCircle,
   MapPin,
+  Play,
+  Share2,
+  ShieldCheck,
+  Sparkles,
   Trophy,
   Users,
-  Building,
-  HelpCircle,
-  ArrowRight,
   X,
-  Sparkles,
-  Code2,
-  Check,
+  Zap,
 } from 'lucide-react';
 import { TeklozyEvent, EventRegistration } from '../../types/events';
 import { EventRegistrationModal } from './EventRegistrationModal';
+import bannerHero from '../../assets/images/hackathon-imgs/banner-img-3.png';
+
+// Placeholder track photos (Unsplash, free license) until artwork is supplied.
+const ph = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=800&h=450&crop=entropy&q=70`;
+const TRACK_PHOTOS = [ph('1531482615713-2afd69097998'), ph('1485827404703-89b55fcc595e'), ph('1558494949-ef010cbdcc31'), ph('1451187580459-43490279c0fa')];
 
 interface EventDetailsViewProps {
   event: TeklozyEvent;
   onBack: () => void;
   onRegisteredSuccess?: (reg: EventRegistration) => void;
   isRegistered?: boolean;
+  onOpenContact?: () => void;
 }
 
 interface TrackDetailInfo {
@@ -45,8 +56,11 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   onBack,
   onRegisteredSuccess,
   isRegistered = false,
+  onOpenContact,
 }) => {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [activeMainTab, setActiveMainTab] = useState<'tracks' | 'timeline' | 'submission' | 'prizes' | 'rules' | 'faq'>('tracks');
+  const [faqCategory, setFaqCategory] = useState<string>('all');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [activeScheduleDay, setActiveScheduleDay] = useState<number>(0);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -192,747 +206,977 @@ ${currentUrl}`;
     },
   ];
 
-  /**
-   * 3D Vector Visuals for each problem track matching the reference aesthetic
-   */
-  const renderTrackVisual = (index: number) => {
-    switch (index) {
-      case 0:
-        // Track 01: 3D Glowing Graduation Mortarboard Cap
-        return (
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center">
-            <div className="absolute inset-0 bg-sky-400/20 rounded-full blur-xl pointer-events-none" />
-            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_8px_16px_rgba(0,136,224,0.35)]" fill="none">
-              <path
-                d="M50 20 L88 38 L50 56 L12 38 Z"
-                fill="url(#capGradient)"
-                stroke="#38BDF8"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M26 45 L26 62 C26 72 74 72 74 62 L74 45"
-                fill="url(#capBodyGradient)"
-                stroke="#0284C7"
-                strokeWidth="1.5"
-              />
-              <circle cx="50" cy="38" r="3" fill="#BAE6FD" />
-              <path
-                d="M50 38 Q65 42 72 58"
-                stroke="#60A5FA"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M72 58 L71 70 M72 58 L73 70 M72 58 L75 69"
-                stroke="#93C5FD"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <defs>
-                <linearGradient id="capGradient" x1="12" y1="20" x2="88" y2="56" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#60A5FA" />
-                  <stop offset="0.5" stopColor="#3B82F6" />
-                  <stop offset="1" stopColor="#1D4ED8" />
-                </linearGradient>
-                <linearGradient id="capBodyGradient" x1="26" y1="45" x2="74" y2="72" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#1E40AF" />
-                  <stop offset="1" stopColor="#172554" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-        );
-
-      case 1:
-        // Track 02: 3D Glowing AI Neural Chip Processor
-        return (
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center">
-            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl pointer-events-none" />
-            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_8px_16px_rgba(0,136,224,0.35)]" fill="none">
-              <path
-                d="M32 12 L32 24 M50 12 L50 24 M68 12 L68 24 M32 76 L32 88 M50 76 L50 88 M68 76 L68 88 M12 32 L24 32 M12 50 L24 50 M12 68 L24 68 M76 32 L88 32 M76 50 L88 50 M76 68 L88 68"
-                stroke="#60A5FA"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-              />
-              <rect
-                x="22"
-                y="22"
-                width="56"
-                height="56"
-                rx="14"
-                fill="url(#chipGradient)"
-                stroke="#38BDF8"
-                strokeWidth="2"
-              />
-              <rect
-                x="30"
-                y="30"
-                width="40"
-                height="40"
-                rx="10"
-                fill="url(#coreGradient)"
-                stroke="#93C5FD"
-                strokeWidth="1"
-              />
-              <text
-                x="50"
-                y="56"
-                textAnchor="middle"
-                fontSize="18"
-                fontWeight="900"
-                fontFamily="system-ui, sans-serif"
-                fill="#FFFFFF"
-                letterSpacing="1"
-              >
-                AI
-              </text>
-              <defs>
-                <linearGradient id="chipGradient" x1="22" y1="22" x2="78" y2="78" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#38BDF8" />
-                  <stop offset="0.5" stopColor="#0088E0" />
-                  <stop offset="1" stopColor="#0369A1" />
-                </linearGradient>
-                <linearGradient id="coreGradient" x1="30" y1="30" x2="70" y2="70" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#0284C7" />
-                  <stop offset="1" stopColor="#0C4A6E" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-        );
-
-      case 2:
-        // Track 03: 3D Cloud Developer Infrastructure with </>
-        return (
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center">
-            <div className="absolute inset-0 bg-sky-400/20 rounded-full blur-xl pointer-events-none" />
-            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_8px_16px_rgba(56,189,248,0.35)]" fill="none">
-              <path
-                d="M32 68 C22 68 14 60 14 50 C14 41 21 34 30 33 C33 22 43 14 55 14 C69 14 80 24 81 37 C87 39 92 45 92 52 C92 61 84 68 75 68 Z"
-                fill="url(#cloudGradient)"
-                stroke="#7DD3FC"
-                strokeWidth="1.5"
-              />
-              <text
-                x="53"
-                y="48"
-                textAnchor="middle"
-                fontSize="16"
-                fontWeight="900"
-                fontFamily="ui-monospace, monospace"
-                fill="#FFFFFF"
-                letterSpacing="0.5"
-              >
-                &lt;/&gt;
-              </text>
-              <defs>
-                <linearGradient id="cloudGradient" x1="14" y1="14" x2="92" y2="68" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#60A5FA" />
-                  <stop offset="0.5" stopColor="#0284C7" />
-                  <stop offset="1" stopColor="#0369A1" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-        );
-
-      case 3:
-      default:
-        // Track 04: 3D Sustainable Sprout / Eco Leaves
-        return (
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center">
-            <div className="absolute inset-0 bg-emerald-400/20 rounded-full blur-xl pointer-events-none" />
-            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_8px_16px_rgba(16,185,129,0.35)]" fill="none">
-              <path
-                d="M50 75 C42 60 22 56 18 36 C34 32 46 48 50 75 Z"
-                fill="url(#leftLeafGrad)"
-                stroke="#6EE7B7"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M50 75 C56 55 78 46 84 25 C88 45 70 65 50 75 Z"
-                fill="url(#rightLeafGrad)"
-                stroke="#A7F3D0"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M50 75 Q51 86 52 90"
-                stroke="#059669"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-              />
-              <defs>
-                <linearGradient id="leftLeafGrad" x1="18" y1="32" x2="50" y2="75" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#34D399" />
-                  <stop offset="1" stopColor="#059669" />
-                </linearGradient>
-                <linearGradient id="rightLeafGrad" x1="50" y1="25" x2="84" y2="75" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#6EE7B7" />
-                  <stop offset="0.6" stopColor="#10B981" />
-                  <stop offset="1" stopColor="#047857" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-        );
-    }
-  };
-
   const activeTrackDetail =
     selectedTrackIndex !== null ? trackDetails[selectedTrackIndex] : null;
 
-  return (
-    <div className="font-manrope text-slate-800 space-y-10 pb-24 max-w-7xl mx-auto">
-      {/* Back button */}
-      <div>
-        <button
-          onClick={onBack}
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-[#0088E0] transition-colors cursor-pointer"
-        >
-          <ArrowLeft size={15} /> Back to Events
-        </button>
+  useEffect(() => {
+    if (selectedTrackIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedTrackIndex(null);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [selectedTrackIndex]);
+
+  const countdown = [
+    { label: 'Days', value: timeLeft.days },
+    { label: 'Hours', value: timeLeft.hours },
+    { label: 'Mins', value: timeLeft.minutes },
+    { label: 'Secs', value: timeLeft.seconds },
+  ];
+
+  const stats = [
+    { icon: Zap, value: '48 Hours', label: 'Sprint duration' },
+    { icon: Users, value: `1–${event.teamConfig.maxTeamSize} Members`, label: 'Team formation' },
+    { icon: Globe, value: event.mode, label: 'Participation mode' },
+    { icon: Award, value: 'Free', label: 'Registration fee' },
+  ];
+
+  // Comprehensive FAQ directory
+  const allFaqs = [
+    {
+      category: 'eligibility',
+      question: 'Who can participate in Teklozy Hackathon 2026?',
+      answer:
+        'Any student enrolled in an accredited undergraduate, postgraduate, or diploma program across India can participate. Whether you are a beginner taking your first steps or an experienced full-stack developer, everyone is welcome.',
+    },
+    {
+      category: 'eligibility',
+      question: 'Is there any registration fee?',
+      answer:
+        'No. Registration for Teklozy Hackathon 2026 is 100% free of charge for all verified students, made possible by Teklozy and our partner community network.',
+    },
+    {
+      category: 'team',
+      question: 'Can I participate individually without a team?',
+      answer:
+        'Yes! You can participate as an individual builder. We also provide a dedicated matchmaking channel on our Discord server prior to kick-off if you wish to find teammates with complementary skills.',
+    },
+    {
+      category: 'rules',
+      question: 'When will problem statements be finalized?',
+      answer:
+        'Detailed problem tracks and challenge specifications will be unveiled during the Opening Ceremony on Day 1 (19 December 2026 at 10:00 AM IST) to ensure a fair playing field.',
+    },
+    {
+      category: 'team',
+      question: 'Can team members be from different colleges?',
+      answer:
+        'Yes! Cross-college, cross-department, and multi-disciplinary teams are fully permitted. Teams can have anywhere between 1 to 4 members.',
+    },
+    {
+      category: 'rules',
+      question: 'Can we use pre-existing code or third-party libraries?',
+      answer:
+        'Open-source libraries, UI components, public APIs, and framework boilerplates are allowed with proper attribution. The core solution and application logic must be developed during the 48-hour sprint.',
+    },
+    {
+      category: 'eligibility',
+      question: 'Will all participants receive verified certificates?',
+      answer:
+        'Yes. All registered participants who submit a qualifying project complying with the submission guidelines will receive a verified Teklozy Digital Certificate of Participation.',
+    },
+  ];
+
+  const displayedFaqs =
+    faqCategory === 'all'
+      ? allFaqs
+      : allFaqs.filter((f) => f.category === faqCategory);
+
+  const registerButton = (tone: 'light' | 'dark' = 'light', extra = '') =>
+    isRegistered ? (
+      <div className={`inline-flex min-h-[44px] sm:min-h-[48px] items-center justify-center gap-2 rounded-xl px-6 sm:px-7 text-sm font-semibold ${tone === 'light' ? 'bg-white text-emerald-700' : 'border border-emerald-200 bg-emerald-50 text-emerald-700'} ${extra}`}>
+        <CheckCircle2 size={16} /> Pass issued
       </div>
+    ) : (
+      <button
+        type="button"
+        onClick={() => setShowRegisterModal(true)}
+        className={`group/btn inline-flex min-h-[44px] sm:min-h-[48px] items-center justify-center gap-2 rounded-xl px-6 sm:px-7 text-sm font-semibold transition-[transform,background-color] duration-150 ease-out active:scale-[0.97] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0088E0] ${
+          tone === 'light' ? 'bg-white text-[#10233F] hover:bg-slate-100 shadow-md' : 'bg-[#10233F] text-white hover:bg-[#1a3558]'
+        } ${extra}`}
+      >
+        Register for hackathon
+        <ArrowRight size={16} className="transition-transform duration-150 group-hover/btn:translate-x-0.5 motion-reduce:transition-none" />
+      </button>
+    );
 
-      {/* 1. UNIFIED CONTAINER: Details + Metrics + Live Countdown Box */}
-      <div className="bg-white rounded-[32px] sm:rounded-[36px] p-6 sm:p-8 shadow-[0_12px_45px_rgba(15,23,42,0.06)] border border-slate-100 space-y-6">
-        {/* Top Header Row */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2.5">
-              <span className="text-[11px] font-black uppercase tracking-wider text-[#0088E0] bg-sky-50 px-3 py-1 rounded-full">
-                {event.category}
-              </span>
-              <span className="text-xs sm:text-sm font-mono font-bold text-slate-500">
-                {event.dates}
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-black text-[#10233F] tracking-tight">
-              {event.title}
-            </h1>
-            <p className="text-sm sm:text-base text-slate-600 font-medium max-w-2xl leading-relaxed">
-              {event.tagline}
-            </p>
-          </div>
+  const scrollToId = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-          <div className="flex items-center gap-3 shrink-0">
-            {isRegistered ? (
-              <div className="px-6 py-3.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-bold flex items-center gap-2">
-                <CheckCircle2 size={16} />
-                <span>Pass Issued</span>
-              </div>
-            ) : (
+  const SectionHead: React.FC<{ icon: React.ElementType; title: string; sub?: string }> = ({ icon: Icon, title, sub }) => (
+    <div className="flex items-center gap-3">
+      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#10233F] text-white shrink-0">
+        <Icon size={17} />
+      </span>
+      <div>
+        <h2 className="text-lg font-bold tracking-tight text-[#10233F]">{title}</h2>
+        {sub && <p className="text-xs text-slate-500 font-medium">{sub}</p>}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="font-manrope text-slate-800 pb-28 sm:pb-20 max-w-7xl mx-auto space-y-5 sm:space-y-6">
+      <style>{`@keyframes evt-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:no-preference){.evt-rise{animation:evt-rise .65s cubic-bezier(.22,1,.36,1) backwards}}`}</style>
+
+      {/* Top Navigation: Breadcrumbs & Back to Events - Tight, clean vertical spacing */}
+      <nav aria-label="Breadcrumb navigation" className="flex flex-wrap items-center justify-between gap-3 pt-0 mb-3">
+        <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+          <button
+            type="button"
+            onClick={onBack}
+            className="group inline-flex items-center gap-1.5 rounded-xl border border-slate-200/90 bg-white px-3 sm:px-3.5 py-1.5 text-xs sm:text-sm font-bold text-slate-700 shadow-xs transition-all hover:border-sky-300 hover:bg-slate-50 hover:text-[#0088E0] active:scale-[0.98] cursor-pointer"
+          >
+            <ArrowLeft size={15} className="transition-transform group-hover:-translate-x-0.5 text-slate-400 group-hover:text-[#0088E0]" />
+            <span>Back to Events</span>
+          </button>
+
+          <span className="text-slate-300 select-none hidden sm:inline" aria-hidden="true">/</span>
+
+          <ol className="hidden sm:inline-flex items-center gap-2 text-slate-500 font-medium">
+            <li>
               <button
                 type="button"
-                onClick={() => setShowRegisterModal(true)}
-                className="px-8 py-3.5 rounded-full bg-[#0088E0] hover:bg-[#0077CC] text-white font-extrabold text-sm shadow-md hover:shadow-sky-300/40 transition-all flex items-center gap-2.5 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                onClick={onBack}
+                className="hover:text-[#0088E0] transition-colors cursor-pointer"
               >
-                <span>Register for Event</span>
-                <ChevronRight size={16} />
+                Events &amp; Programs
               </button>
-            )}
+            </li>
+            <li className="text-slate-300 select-none" aria-hidden="true">/</li>
+            <li className="text-slate-400 font-medium">Hackathons</li>
+            <li className="text-slate-300 select-none" aria-hidden="true">/</li>
+            <li className="font-bold text-[#10233F]" aria-current="page">
+              Teklozy Hackathon 2026
+            </li>
+          </ol>
+        </div>
 
-            <div className="relative">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-3 py-1 text-[11px] sm:text-xs font-bold text-emerald-700">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            Registrations Open
+          </span>
+          <span className="hidden md:inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-[11px] sm:text-xs font-semibold text-slate-600">
+            <Clock size={13} className="text-slate-400" />
+            48-Hour Sprint
+          </span>
+        </div>
+      </nav>
+
+      {/* Hero Banner: Balanced 50/50 Composition with banner-img-2.png */}
+      <header className="relative isolate overflow-hidden rounded-[2rem] border border-blue-500/25 bg-[#03081A] text-white shadow-[0_20px_50px_-15px_rgba(2,6,23,0.7)]">
+        {/* Soft sapphire & electric cyan gradient mesh blending smoothly */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background: `
+              radial-gradient(ellipse 65% 60% at 75% 50%, rgba(14, 90, 245, 0.45) 0%, rgba(10, 45, 140, 0.25) 45%, transparent 72%),
+              radial-gradient(ellipse 50% 40% at 75% 85%, rgba(6, 182, 212, 0.25) 0%, transparent 60%),
+              radial-gradient(ellipse 45% 45% at 20% 80%, rgba(2, 132, 199, 0.15) 0%, transparent 60%),
+              linear-gradient(135deg, #020614 0%, #051028 40%, #0A1C44 75%, #04091A 100%)
+            `,
+          }}
+        />
+
+        {/* Luminous orbital curves */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-20 top-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-sky-400/25 [mask-image:linear-gradient(135deg,black,transparent_75%)] -z-10"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-8 top-1/2 -translate-y-1/2 w-[460px] h-[460px] rounded-full border border-cyan-400/30 [mask-image:linear-gradient(45deg,transparent,black_50%,transparent)] -z-10"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-16 bottom-2 w-72 h-32 bg-cyan-400/18 rounded-full blur-3xl -z-10"
+        />
+
+        {/* Delicate subtle tech grid pattern */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 opacity-15 [mask-image:radial-gradient(ellipse_at_72%_50%,black_35%,transparent_75%)]"
+          style={{
+            backgroundImage: 'radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          }}
+        />
+
+        {/* Top border fine highlight */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-400/40 to-transparent -z-10"
+        />
+
+        <div className="grid items-center lg:grid-cols-2 gap-6 lg:gap-8">
+          {/* Left Column: Balanced Typography & Action Controls */}
+          <div className="relative z-10 space-y-4 sm:space-y-5 p-6 sm:p-8 lg:p-10">
+            <span
+              className="evt-rise inline-flex items-center gap-2 rounded-full border border-sky-400/35 bg-sky-500/15 px-3 py-1 font-mono text-xs font-semibold tracking-wider text-sky-200 backdrop-blur-md shadow-xs"
+              style={{ animationDelay: '0ms' }}
+            >
+              <span aria-hidden="true" className="text-sky-400 font-bold">&lt;/&gt;</span> TEKLOZY HACKATHON
+            </span>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold leading-[1.08] tracking-tight text-white">
+              Teklozy Hackathon{' '}
+              <span className="bg-gradient-to-r from-white via-sky-100 to-sky-300 bg-clip-text text-transparent">
+                2026
+              </span>
+            </h1>
+
+            <p
+              className="evt-rise max-w-md text-sm sm:text-base leading-relaxed text-slate-300 font-normal"
+              style={{ animationDelay: '350ms' }}
+            >
+              {event.tagline || 'Code, collaborate, and build high-impact tech solutions in 48 hours.'}
+            </p>
+
+            <div
+              className="evt-rise flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-200 font-medium"
+              style={{ animationDelay: '450ms' }}
+            >
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 border border-white/10 backdrop-blur-xs">
+                <Calendar size={14} className="text-sky-300" /> {event.dates}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 border border-white/10 backdrop-blur-xs">
+                <MapPin size={14} className="text-sky-300" /> {event.mode}
+              </span>
+            </div>
+
+            <div className="evt-rise flex flex-wrap items-center gap-3 pt-1" style={{ animationDelay: '550ms' }}>
+              {registerButton('light')}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveMainTab('tracks');
+                  scrollToId('hack-tabs-section');
+                }}
+                className="inline-flex min-h-[44px] sm:min-h-[48px] items-center gap-2 rounded-xl border border-white/25 bg-white/5 px-5 sm:px-6 text-sm font-semibold text-white transition-all hover:bg-white/15 hover:border-white/40 cursor-pointer"
+              >
+                <Play size={14} className="fill-white/30 text-white" /> Explore challenges
+              </button>
               <button
                 type="button"
                 onClick={handleCopyLink}
-                className={`p-3.5 rounded-full border transition-all cursor-pointer flex items-center justify-center ${
+                aria-label={copiedLink ? 'Link copied' : 'Share event'}
+                title={copiedLink ? 'Link copied to clipboard!' : 'Share event'}
+                className={`flex h-[44px] w-[44px] sm:h-[48px] sm:w-[48px] items-center justify-center rounded-xl border transition-all cursor-pointer ${
                   copiedLink
-                    ? 'bg-emerald-50 border-emerald-300 text-emerald-600 shadow-sm'
-                    : 'border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-[#0088E0]'
+                    ? 'border-emerald-300 bg-emerald-500/20 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
+                    : 'border-white/25 bg-white/5 text-white hover:bg-white/15 hover:border-white/40'
                 }`}
-                title={copiedLink ? 'Copied to clipboard!' : 'Share event invitation'}
               >
-                {copiedLink ? <Check size={16} className="text-emerald-600" /> : <Share2 size={16} />}
+                {copiedLink ? <Check size={16} /> : <Share2 size={16} />}
               </button>
-
-              {/* Toast feedback */}
-              {copiedLink && (
-                <div className="absolute top-full right-0 mt-2 z-30 px-3.5 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold whitespace-nowrap shadow-xl flex items-center gap-1.5">
-                  <Check size={12} className="text-emerald-400" />
-                  <span>Invite & link copied!</span>
-                </div>
-              )}
             </div>
           </div>
-        </div>
 
-        {/* 4 Clean Metric Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-4 rounded-2xl bg-slate-50/90 border border-slate-100 text-center hover:border-sky-200 transition-colors">
-            <span className="text-sm sm:text-base font-black text-slate-900 block">{event.duration}</span>
-            <span className="text-xs text-slate-400 font-medium mt-0.5 block">Sprint Duration</span>
+          {/* Right Column: Balanced image size blending with banner */}
+          <div className="relative z-10 flex items-center justify-center lg:justify-end px-4 sm:px-6 lg:px-0 lg:pr-8 py-4 sm:py-6 lg:py-8">
+            <img
+              src={bannerHero}
+              alt="Teklozy Hackathon 2026 Team"
+              className="evt-rise w-full max-w-[460px] sm:max-w-[500px] lg:max-w-[540px] xl:max-w-[560px] object-contain drop-shadow-[0_20px_40px_rgba(0,100,230,0.35)] transition-transform duration-300 hover:scale-[1.01]"
+              style={{ animationDelay: '350ms' }}
+              loading="eager"
+            />
           </div>
-          <div className="p-4 rounded-2xl bg-slate-50/90 border border-slate-100 text-center hover:border-sky-200 transition-colors">
-            <span className="text-sm sm:text-base font-black text-slate-900 block">
-              1–{event.teamConfig.maxTeamSize} Members
+        </div>
+      </header>
+
+      {/* Stats bar overlapping the hero bottom - Tightened spacing */}
+      <dl className="relative z-10 -mt-5 sm:-mt-6 mx-3 sm:mx-6 lg:mx-8 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-200/90 shadow-[0_10px_25px_-10px_rgba(15,23,42,0.12)] sm:grid-cols-4 mb-4">
+        {stats.map((s, i) => (
+          <div key={i} className="flex items-center gap-3 bg-white px-4 sm:px-5 py-3.5 transition-colors hover:bg-slate-50/70">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#E8F2FB] text-[#0088E0]">
+              <s.icon size={18} />
             </span>
-            <span className="text-xs text-slate-400 font-medium mt-0.5 block">Team Formation</span>
-          </div>
-          <div className="p-4 rounded-2xl bg-slate-50/90 border border-slate-100 text-center hover:border-sky-200 transition-colors">
-            <span className="text-sm sm:text-base font-black text-slate-900 block">{event.mode}</span>
-            <span className="text-xs text-slate-400 font-medium mt-0.5 block">Participation Mode</span>
-          </div>
-          <div className="p-4 rounded-2xl bg-slate-50/90 border border-slate-100 text-center hover:border-sky-200 transition-colors">
-            <span className="text-sm sm:text-base font-black text-slate-900 block">Free</span>
-            <span className="text-xs text-slate-400 font-medium mt-0.5 block">Registration Fee</span>
-          </div>
-        </div>
-
-        {/* Integrated Deep Blue Countdown Box */}
-        <div className="relative overflow-hidden rounded-[26px] sm:rounded-[28px] bg-gradient-to-br from-[#0B1528] via-[#10233F] to-[#0A1D36] text-white p-6 sm:p-7 border border-sky-500/25 shadow-xl">
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-[#0088E0]/20 blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-1.5 text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-400">
-                  COUNTDOWN TO EVENT KICK-OFF
-                </span>
-              </div>
-              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Hacking Begins in
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-300">
-                Saturday, 19 December 2026 • 09:00 AM IST
-              </p>
-            </div>
-
-            {/* 4 Deep Dark Glass Boxes */}
-            <div className="grid grid-cols-4 gap-2.5 sm:gap-3 text-center min-w-[280px] sm:min-w-[340px]">
-              <div className="p-3 sm:p-3.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md shadow-inner">
-                <span className="text-2xl sm:text-3xl font-black text-white font-mono block">
-                  {String(timeLeft.days).padStart(2, '0')}
-                </span>
-                <span className="text-[10px] text-sky-300 font-bold uppercase mt-1 block tracking-wider">
-                  Days
-                </span>
-              </div>
-              <div className="p-3 sm:p-3.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md shadow-inner">
-                <span className="text-2xl sm:text-3xl font-black text-white font-mono block">
-                  {String(timeLeft.hours).padStart(2, '0')}
-                </span>
-                <span className="text-[10px] text-sky-300 font-bold uppercase mt-1 block tracking-wider">
-                  Hours
-                </span>
-              </div>
-              <div className="p-3 sm:p-3.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md shadow-inner">
-                <span className="text-2xl sm:text-3xl font-black text-white font-mono block">
-                  {String(timeLeft.minutes).padStart(2, '0')}
-                </span>
-                <span className="text-[10px] text-sky-300 font-bold uppercase mt-1 block tracking-wider">
-                  Mins
-                </span>
-              </div>
-              <div className="p-3 sm:p-3.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md shadow-inner">
-                <span className="text-2xl sm:text-3xl font-black text-[#38BDF8] font-mono block">
-                  {String(timeLeft.seconds).padStart(2, '0')}
-                </span>
-                <span className="text-[10px] text-sky-300 font-bold uppercase mt-1 block tracking-wider">
-                  Secs
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-5 pt-4 border-t border-white/10 text-xs text-slate-300 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span className="text-slate-400">
-              Registration Deadline:{' '}
-              <strong className="text-white font-mono">{event.registrationDeadline}</strong>
-            </span>
-            <span className="text-sky-300 font-bold flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Free Student Registration Open
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. PROBLEM DOMAINS (NO ENCLOSING OUTER WHITE BOX — DIRECT ON PAGE) */}
-      <div className="space-y-5">
-        {/* Section Header: Direct on Screen without outer card wrapper */}
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-sky-50 text-[#0088E0] flex items-center justify-center font-bold shadow-xs border border-sky-100/60 shrink-0">
-            <Layers size={22} />
-          </div>
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-[#10233F] tracking-tight">
-              Problem Domains
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium">
-              Choose a track and build a solution for a real-world problem.
-            </p>
-          </div>
-        </div>
-
-        {/* 2x2 Individual Track Cards — Direct on Page */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-          {event.themes.map((theme, idx) => (
-            <div
-              key={idx}
-              onClick={() => setSelectedTrackIndex(idx)}
-              className="group relative rounded-2xl sm:rounded-3xl p-5 sm:p-6 bg-white border border-slate-200/80 hover:border-sky-300 shadow-xs hover:shadow-lg transition-all duration-300 flex items-center justify-between gap-4 cursor-pointer hover:-translate-y-0.5"
-            >
-              {/* Left text */}
-              <div className="space-y-2 flex-1">
-                <span className="inline-block px-2.5 py-0.5 rounded-full bg-sky-100/70 text-[#0088E0] text-[10px] font-black uppercase tracking-wider">
-                  TRACK 0{idx + 1}
-                </span>
-                <h3 className="text-base sm:text-lg font-black text-[#10233F] leading-snug group-hover:text-[#0088E0] transition-colors">
-                  {theme.title}
-                </h3>
-                {theme.description && (
-                  <p className="text-xs text-slate-500 line-clamp-2 font-normal leading-relaxed">
-                    {theme.description}
-                  </p>
-                )}
-              </div>
-
-              {/* Right: 3D Vector Visual + Arrow Button */}
-              <div className="flex flex-col items-end justify-between self-stretch shrink-0 gap-2">
-                {renderTrackVisual(idx)}
-                <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200/80 shadow-xs flex items-center justify-center text-slate-600 group-hover:text-white group-hover:bg-[#0088E0] group-hover:border-[#0088E0] transition-all">
-                  <ArrowRight size={14} />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. 48-HOUR HACKATHON SCHEDULE & TIMELINE (OPEN FLOW — NO OUTER BOX) */}
-      <div className="space-y-6 pt-2">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shrink-0 shadow-xs border border-emerald-100/60">
-              <Calendar size={20} />
-            </div>
             <div>
-              <h2 className="text-xl sm:text-2xl font-black text-[#10233F] tracking-tight">
-                48-Hour Hackathon Schedule & Timeline
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Detailed timeline for Day 1 and Day 2 of the sprint
-              </p>
+              <dd className="text-sm sm:text-base font-bold text-[#10233F]">{s.value}</dd>
+              <dt className="text-xs text-slate-500 font-medium">{s.label}</dt>
             </div>
           </div>
+        ))}
+      </dl>
 
-          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 self-start sm:self-auto">
-            Provisional Sample Schedule
-          </span>
-        </div>
-
-        {/* Day Selector Tabs */}
-        <div className="flex items-center gap-2.5 pb-1">
-          {event.provisionalSchedule.map((sched, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => setActiveScheduleDay(idx)}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeScheduleDay === idx
-                  ? 'bg-[#0088E0] text-white shadow-sm'
-                  : 'bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              {sched.day} ({sched.date})
-            </button>
-          ))}
-        </div>
-
-        {/* Timeline Items Track */}
-        <div className="relative pl-6 sm:pl-8 border-l-2 border-sky-100 space-y-5 ml-3 py-2">
-          {event.provisionalSchedule[activeScheduleDay]?.items.map((item, idx) => (
-            <div key={idx} className="relative group">
-              {/* Timeline Bullet Node */}
-              <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-white border-[3px] border-[#0088E0] shadow-sm group-hover:scale-125 transition-transform" />
-
-              <div className="bg-white hover:bg-sky-50/30 p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-sky-300 transition-all space-y-1.5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                  <span className="font-mono text-xs font-bold text-[#0088E0]">
-                    {item.time}
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Day {activeScheduleDay + 1} Session
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-bold text-slate-900">{item.title}</h3>
-                {item.description && (
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                    {item.description}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 4. VENUE DETAILS & FAQS (ONLY FAQ IN A WHITE BOX) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 pt-4">
-        {/* Left: Venue & Logistics Specs (6 cols - Open on canvas, zero box clutter) */}
-        <div className="lg:col-span-6 space-y-6">
-          <div className="flex items-center gap-3 pb-3 border-b border-slate-200/80">
-            <div className="w-11 h-11 rounded-2xl bg-sky-50 text-[#0088E0] flex items-center justify-center font-bold shrink-0 border border-sky-100/60 shadow-xs">
-              <MapPin size={22} />
-            </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-black text-[#10233F] tracking-tight">
-                Venue & Logistics Details
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Confirmed specifications & upcoming logistics
-              </p>
-            </div>
-          </div>
-
-          <div className="divide-y divide-slate-200/80 space-y-1">
-            <div className="pt-2 pb-4 first:pt-0 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-black uppercase tracking-wider text-[#0088E0]">
-                  Venue & Host
-                </span>
-                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
-                  Format
-                </span>
-              </div>
-              <p className="font-bold text-slate-900 text-sm sm:text-base leading-snug">
-                {event.placeholders.venue}
-              </p>
-            </div>
-
-            <div className="py-4 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-black uppercase tracking-wider text-[#0088E0]">
-                  Prize Details & Recognition
-                </span>
-                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
-                  Awards
-                </span>
-              </div>
-              <p className="font-bold text-slate-900 text-sm sm:text-base leading-snug">
-                {event.placeholders.prizes}
-              </p>
-            </div>
-
-            <div className="py-4 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-black uppercase tracking-wider text-[#0088E0]">
-                  Sponsors & Industry Partners
-                </span>
-                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
-                  Partners
-                </span>
-              </div>
-              <p className="font-bold text-slate-900 text-sm sm:text-base leading-snug">
-                {event.placeholders.sponsors}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Frequently Asked Questions (ONLY this in a clean white box) */}
-        <div className="lg:col-span-6 bg-white rounded-[32px] sm:rounded-[36px] p-6 sm:p-8 border border-slate-100 shadow-[0_10px_35px_rgba(15,23,42,0.05)] space-y-5">
-          <div className="flex items-center gap-3 pb-2 border-b border-slate-100">
-            <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold shrink-0 border border-amber-100/60 shadow-xs">
-              <HelpCircle size={22} />
-            </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-black text-[#10233F] tracking-tight">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Everything you need to know before registering
-              </p>
-            </div>
-          </div>
-
-          <div className="divide-y divide-slate-100">
-            {event.faqs.map((faq, idx) => {
-              const isOpen = openFaqIndex === idx;
+      {/* Tabs Navigation matching Reference Image 3 (Horizontal underline tabs) */}
+      <div id="hack-tabs-section" className="scroll-mt-20">
+        <div className="border-b border-slate-200 mb-6">
+          <div
+            className="flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar"
+            role="tablist"
+            aria-label="Hackathon sections"
+          >
+            {[
+              { id: 'tracks', label: 'Challenge Tracks' },
+              { id: 'timeline', label: 'Timeline' },
+              { id: 'submission', label: 'Submission' },
+              { id: 'prizes', label: 'Prizes' },
+              { id: 'rules', label: 'Rules' },
+              { id: 'faq', label: 'FAQ' },
+            ].map((tab) => {
+              const isActive = activeMainTab === tab.id;
               return (
-                <div key={idx} className="py-3.5 first:pt-0">
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full flex items-center justify-between text-left font-bold text-slate-900 hover:text-[#0088E0] transition-colors gap-3 cursor-pointer py-1"
-                  >
-                    <span className="text-sm sm:text-base">{faq.question}</span>
-                    <span className="shrink-0 text-slate-400">
-                      {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                    </span>
-                  </button>
-                  {isOpen && (
-                    <p className="mt-2 text-slate-600 leading-relaxed text-xs sm:text-sm font-medium">
-                      {faq.answer}
-                    </p>
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveMainTab(tab.id as any)}
+                  className={`pb-3 text-sm font-semibold transition-colors relative whitespace-nowrap cursor-pointer ${
+                    isActive
+                      ? 'text-[#10233F] font-bold'
+                      : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  {isActive && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-x-0 bottom-0 h-0.5 bg-[#10233F] rounded-full"
+                    />
                   )}
-                </div>
+                </button>
               );
             })}
           </div>
         </div>
-      </div>
 
-      {/* 5. CLOSING ACTION HERO BANNER (CLEAN, PRO, ZERO BOX CLUTTER) */}
-      <div className="relative overflow-hidden rounded-[32px] sm:rounded-[36px] bg-gradient-to-r from-[#071326] via-[#0B1E38] to-[#0A264F] text-white p-8 sm:p-12 shadow-2xl border border-sky-500/20">
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-[#0088E0]/20 blur-3xl pointer-events-none" />
+        {/* Main Two-Column Layout */}
+        <div className="grid gap-6 lg:grid-cols-[1fr_21rem] lg:gap-8 items-start">
+          {/* Left Column: Active Tab Content */}
+          <div className="min-w-0 space-y-6">
+            {/* TAB 1: CHALLENGE TRACKS */}
+            {activeMainTab === 'tracks' && (
+              <section className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <SectionHead icon={Flag} title="Problem Domains" sub="Choose a track and build a solution for a real-world problem" />
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1 text-xs font-semibold text-slate-600">
+                    {event.themes.length} Problem Domains
+                  </span>
+                </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-xl">
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#38BDF8]">
-              Teklozy Hackathon 2026
-            </span>
-            <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-              Ready to build impactful tech in 48 hours?
-            </h3>
-            <p className="text-slate-300 text-sm sm:text-base font-medium">
-              Join student innovators across India on 19–20 December 2026. Free registration, verified certificate, and live mentor guidance.
-            </p>
-          </div>
+                <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  {event.themes.map((theme, idx) => (
+                    <li key={idx}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedTrackIndex(idx)}
+                        className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white text-left transition-all duration-200 hover:-translate-y-1 hover:border-sky-300 hover:shadow-lg motion-reduce:hover:translate-y-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0088E0]"
+                      >
+                        <span className="relative block aspect-[16/9] overflow-hidden bg-[#081225]">
+                          <img
+                            src={TRACK_PHOTOS[idx % TRACK_PHOTOS.length]}
+                            alt={theme.title}
+                            loading="lazy"
+                            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                          <span className="absolute left-3 top-3 rounded-lg bg-white/95 px-2.5 py-1 font-mono text-[11px] font-bold text-[#10233F] shadow-xs">
+                            TRACK 0{idx + 1}
+                          </span>
+                        </span>
+                        <span className="flex flex-1 flex-col gap-2 p-5 sm:p-6">
+                          <span className="text-base sm:text-lg font-bold leading-snug text-[#10233F] group-hover:text-[#0088E0] transition-colors">
+                            {theme.title}
+                          </span>
+                          {theme.description && (
+                            <span className="line-clamp-2 text-sm leading-relaxed text-slate-600">
+                              {theme.description}
+                            </span>
+                          )}
+                          <span className="mt-auto inline-flex items-center gap-1.5 pt-3 text-sm font-semibold text-[#0B4F85] group-hover:text-[#0088E0]">
+                            View track brief <ArrowRight size={15} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
-          <div className="shrink-0">
-            {isRegistered ? (
-              <div className="px-8 py-4 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 font-bold text-sm flex items-center gap-2">
-                <CheckCircle2 size={18} />
-                <span>Pass Issued • Registered</span>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowRegisterModal(true)}
-                className="px-9 py-4 rounded-full bg-[#0088E0] hover:bg-[#0077CC] text-white font-extrabold text-sm sm:text-base shadow-xl shadow-sky-500/30 transition-all flex items-center gap-3 hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <span>Register for Hackathon</span>
-                <ChevronRight size={18} />
-              </button>
+            {/* TAB 2: TIMELINE */}
+            {activeMainTab === 'timeline' && (
+              <section className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <SectionHead
+                    icon={Calendar}
+                    title="48-Hour Hackathon Schedule & Timeline"
+                    sub="Detailed milestone roadmap across Day 1 and Day 2"
+                  />
+                  <div role="tablist" aria-label="Schedule day" className="inline-flex rounded-full bg-slate-100 p-1">
+                    {event.provisionalSchedule.map((sched, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        role="tab"
+                        aria-selected={activeScheduleDay === idx}
+                        onClick={() => setActiveScheduleDay(idx)}
+                        className={`min-h-[38px] rounded-full px-5 text-sm font-semibold transition-colors cursor-pointer ${
+                          activeScheduleDay === idx
+                            ? 'bg-[#10233F] text-white shadow-xs'
+                            : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        {sched.day} · {sched.date}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Day Overview banner */}
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0088E0]/15 text-[#0088E0] font-bold text-xs">
+                      {activeScheduleDay === 0 ? 'Day 1' : 'Day 2'}
+                    </span>
+                    <div>
+                      <p className="text-sm font-bold text-[#10233F]">{event.provisionalSchedule[activeScheduleDay]?.day}</p>
+                      <p className="text-xs text-slate-500">
+                        {event.provisionalSchedule[activeScheduleDay]?.items.length} structured checkpoints &amp; mentor sessions
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-semibold text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-200 self-start sm:self-auto">
+                    Hybrid: Online Discord + Regional Hubs
+                  </span>
+                </div>
+
+                {/* Timeline step list */}
+                <ol className="relative ml-3 space-y-0 border-l-2 border-slate-200 pl-7 py-2">
+                  {event.provisionalSchedule[activeScheduleDay]?.items.map((item, idx) => (
+                    <li key={idx} className="relative pb-8 last:pb-2">
+                      <span
+                        aria-hidden="true"
+                        className="absolute -left-[35px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#0088E0] bg-white ring-4 ring-sky-50"
+                      />
+                      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                        <span className="inline-flex items-center rounded-md bg-[#E8F2FB] px-2.5 py-0.5 font-mono text-xs font-bold text-[#0B4F85]">
+                          {item.time}
+                        </span>
+                        <h3 className="text-base font-bold text-slate-900">{item.title}</h3>
+                      </div>
+                      {item.description && (
+                        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
+                          {item.description}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
+
+            {/* TAB 3: SUBMISSION */}
+            {activeMainTab === 'submission' && (
+              <section className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
+                <SectionHead
+                  icon={FileText}
+                  title="Submission Guidelines & Checklist"
+                  sub="Ensure your project satisfies all criteria before the 20 Dec deadline"
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    {
+                      title: 'Public GitHub Repository',
+                      desc: 'A well-structured repository containing all source code, commit history created during the 48h sprint, and an open-source license.',
+                      badge: 'Required',
+                    },
+                    {
+                      title: 'Live Deployed Demo / APK',
+                      desc: 'A functioning web application URL or downloadable mobile APK allowing the evaluation jury to test interactive flows.',
+                      badge: 'Required',
+                    },
+                    {
+                      title: '3-Minute Video Walkthrough',
+                      desc: 'A concise video explaining problem statement, architecture overview, live product demonstration, and future roadmap.',
+                      badge: 'Required',
+                    },
+                    {
+                      title: 'Comprehensive README',
+                      desc: 'Clear problem summary, installation guide, tech stack rationale, team member contributions, and API documentation.',
+                      badge: 'Recommended',
+                    },
+                  ].map((item, idx) => (
+                    <div key={idx} className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-base font-bold text-[#10233F]">{item.title}</h3>
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                          item.badge === 'Required' ? 'bg-sky-100 text-[#0088E0]' : 'bg-slate-200 text-slate-600'
+                        }`}>
+                          {item.badge}
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Judging Criteria Breakdown */}
+                <div className="space-y-3 pt-2">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500">Evaluation &amp; Scoring Matrix</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                      { title: 'Technical Architecture', weight: '25%', desc: 'Code hygiene, scalability, and stack elegance' },
+                      { title: 'Innovation & Impact', weight: '25%', desc: 'Originality of approach and value to users' },
+                      { title: 'UI/UX Polish', weight: '25%', desc: 'Design taste, accessibility, and user flow' },
+                      { title: 'Feasibility & Readiness', weight: '25%', desc: 'Real-world utility and execution depth' },
+                    ].map((crit, idx) => (
+                      <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs text-center space-y-1">
+                        <span className="block font-mono text-xl font-extrabold text-[#0088E0]">{crit.weight}</span>
+                        <span className="block text-xs font-bold text-slate-900">{crit.title}</span>
+                        <span className="block text-[11px] text-slate-500">{crit.desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 flex items-center gap-3">
+                  <Clock className="text-amber-600 shrink-0" size={20} />
+                  <p className="text-xs sm:text-sm text-amber-900 font-medium">
+                    <strong>Submission Cutoff:</strong> Sunday, 20 December 2026 at 03:00 PM IST. Late submissions cannot be accepted by the portal.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* TAB 4: PRIZES */}
+            {activeMainTab === 'prizes' && (
+              <section className="space-y-4">
+                {/* Top Card: Total prize pool */}
+                <div className="rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs">
+                  <span className="text-sm font-normal text-slate-500">Total prize pool</span>
+                  <div className="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[#10233F]">
+                    ₹50K
+                  </div>
+                  <p className="mt-2 text-sm text-slate-600">
+                    ₹50,000 cash + $100 Claude Code credits for each of the top 3
+                  </p>
+                </div>
+
+                {/* Bottom Card: 3 podium rows matching reference */}
+                <div className="rounded-2xl border border-slate-200/90 bg-white divide-y divide-slate-100 overflow-hidden shadow-xs">
+                  {/* 1st Place */}
+                  <div className="p-5 sm:p-6 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full border border-amber-300 bg-amber-50 text-amber-600 font-semibold text-sm flex items-center justify-center shrink-0">
+                        1st
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-slate-900 text-base sm:text-lg">1st place</h3>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                          ₹25,000 cash + $100 Claude Code credits
+                        </p>
+                      </div>
+                    </div>
+                    <span className="font-bold text-slate-900 text-base sm:text-lg shrink-0">₹25K</span>
+                  </div>
+
+                  {/* 2nd Place */}
+                  <div className="p-5 sm:p-6 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full border border-slate-200 bg-slate-50 text-slate-600 font-semibold text-sm flex items-center justify-center shrink-0">
+                        2nd
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-slate-900 text-base sm:text-lg">2nd place</h3>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                          ₹15,000 cash + $100 Claude Code credits
+                        </p>
+                      </div>
+                    </div>
+                    <span className="font-bold text-slate-900 text-base sm:text-lg shrink-0">₹15K</span>
+                  </div>
+
+                  {/* 3rd Place */}
+                  <div className="p-5 sm:p-6 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full border border-slate-200 bg-slate-50 text-slate-600 font-semibold text-sm flex items-center justify-center shrink-0">
+                        3rd
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-slate-900 text-base sm:text-lg">3rd place</h3>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                          ₹10,000 cash + $100 Claude Code credits
+                        </p>
+                      </div>
+                    </div>
+                    <span className="font-bold text-slate-900 text-base sm:text-lg shrink-0">₹10K</span>
+                  </div>
+                </div>
+
+                {/* Additional participant perk badge */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-slate-200/80 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm text-slate-600">
+                  <div className="flex items-center gap-2">
+                    <Award size={18} className="text-[#0088E0] shrink-0" />
+                    <span>Verified Teklozy Digital Certificates of Participation for all active teams</span>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-slate-800">
+                    <Sparkles size={14} className="text-amber-500" />
+                    4 Domain Tracks Recognized
+                  </span>
+                </div>
+              </section>
+            )}
+
+            {/* TAB 5: RULES */}
+            {activeMainTab === 'rules' && (
+              <section className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
+                <SectionHead
+                  icon={ShieldCheck}
+                  title="Rules &amp; Code of Conduct"
+                  sub="Guidelines to ensure fairness, security, and respectful collaboration"
+                />
+
+                <div className="space-y-3">
+                  {event.rules.map((rule, idx) => (
+                    <div key={idx} className="flex items-start gap-3.5 p-4 rounded-xl border border-slate-200/90 bg-white">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#E8F2FB] font-mono text-xs font-bold text-[#0B4F85] mt-0.5">
+                        {idx + 1}
+                      </span>
+                      <p className="text-sm text-slate-700 leading-relaxed font-medium">{rule}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50 space-y-2">
+                  <h3 className="text-sm font-bold text-[#10233F]">Eligibility &amp; Team Composition</h3>
+                  <ul className="space-y-2 text-xs sm:text-sm text-slate-600">
+                    {event.eligibility.map((el, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <Check size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>{el}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+            )}
+
+            {/* TAB 6: FAQ */}
+            {activeMainTab === 'faq' && (
+              <section className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <SectionHead
+                    icon={HelpCircle}
+                    title="Frequently Asked Questions"
+                    sub="Everything you need to know before registering and participating"
+                  />
+
+                  {/* FAQ Category Pills */}
+                  <div className="inline-flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1 text-xs font-semibold self-start sm:self-auto">
+                    {[
+                      { id: 'all', label: 'All FAQs' },
+                      { id: 'eligibility', label: 'Eligibility' },
+                      { id: 'team', label: 'Teams' },
+                      { id: 'rules', label: 'Rules' },
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setFaqCategory(cat.id)}
+                        className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                          faqCategory === cat.id
+                            ? 'bg-white text-[#10233F] shadow-xs font-bold'
+                            : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* FAQ Accordion Items */}
+                <div className="space-y-3 pt-1">
+                  {displayedFaqs.map((faq, idx) => {
+                    const isOpen = openFaqIndex === idx;
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                          isOpen
+                            ? 'border-sky-300 bg-sky-50/30 shadow-xs'
+                            : 'border-slate-200/90 bg-white hover:border-slate-300'
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          aria-expanded={isOpen}
+                          onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                          className="flex w-full items-center justify-between gap-4 p-5 text-left text-sm sm:text-base font-bold text-[#10233F] hover:text-[#0088E0] transition-colors cursor-pointer"
+                        >
+                          <span className="flex items-center gap-3">
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 font-mono text-xs font-bold text-slate-500">
+                              {idx + 1}
+                            </span>
+                            <span>{faq.question}</span>
+                          </span>
+                          <ChevronDown
+                            size={18}
+                            className={`shrink-0 text-slate-400 transition-transform duration-200 motion-reduce:transition-none ${
+                              isOpen ? 'rotate-180 text-[#0088E0]' : ''
+                            }`}
+                          />
+                        </button>
+                        {isOpen && (
+                          <div className="border-t border-slate-100/90 px-5 pb-5 pt-3">
+                            <p className="text-sm sm:text-[15px] leading-relaxed text-slate-600 pl-9">
+                              {faq.answer}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Need more help banner */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-sky-100 bg-[#F4F9FD] p-5">
+                  <div className="space-y-0.5 text-center sm:text-left">
+                    <p className="text-sm font-bold text-[#10233F]">Have a question not listed here?</p>
+                    <p className="text-xs text-slate-600">Connect with our organizing mentors or drop us a query.</p>
+                  </div>
+                  {onOpenContact && (
+                    <button
+                      type="button"
+                      onClick={onOpenContact}
+                      className="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#10233F] hover:bg-slate-50 hover:border-sky-300 shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                    >
+                      Contact Organizers
+                    </button>
+                  )}
+                </div>
+              </section>
             )}
           </div>
+
+          {/* Right Column: Sticky Sidebar */}
+          <aside className="h-fit space-y-5 lg:sticky lg:top-24">
+            {/* 1. Countdown Card (Matching Reference Structure in Dark Mode) */}
+            <div className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-b from-[#091533] via-[#060E24] to-[#040816] p-6 text-white border border-blue-500/20 shadow-xl space-y-4">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-blue-500/20 blur-2xl -z-10"
+              />
+              
+              <div>
+                <p className="text-sm font-normal text-slate-300">Registration closes in</p>
+              </div>
+
+              {/* 4 Countdown Tiles */}
+              <div className="grid grid-cols-4 gap-2 text-center">
+                {countdown.map((c) => (
+                  <div
+                    key={c.label}
+                    className="rounded-2xl border border-white/10 bg-white/[0.04] py-3 px-1 backdrop-blur-xs flex flex-col items-center justify-center"
+                  >
+                    <span className="block font-mono text-xl sm:text-2xl font-bold tabular-nums text-white">
+                      {String(c.value).padStart(2, '0')}
+                    </span>
+                    <span className="mt-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                      {c.label.toUpperCase()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA Button */}
+              {isRegistered ? (
+                <div className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-sm font-bold text-emerald-300">
+                  <CheckCircle2 size={16} /> Pass issued
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowRegisterModal(true)}
+                  className="flex min-h-[48px] w-full items-center justify-center rounded-xl bg-white text-sm sm:text-base font-bold text-[#091533] transition-all duration-150 ease-out hover:bg-slate-100 active:scale-[0.98] shadow-md cursor-pointer"
+                >
+                  Register now
+                </button>
+              )}
+
+              {/* Social Proof Row */}
+              <div className="flex items-center gap-2.5 pt-0.5">
+                <div className="flex -space-x-1.5 shrink-0">
+                  <span className="inline-block h-5 w-5 rounded-full bg-[#A3E635] ring-2 ring-[#060E24]" />
+                  <span className="inline-block h-5 w-5 rounded-full bg-[#00D2FF] ring-2 ring-[#060E24]" />
+                  <span className="inline-block h-5 w-5 rounded-full bg-[#EC4899] ring-2 ring-[#060E24]" />
+                  <span className="inline-block h-5 w-5 rounded-full bg-[#F59E0B] ring-2 ring-[#060E24]" />
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300">
+                  <strong className="text-white font-bold">221</strong> registered · <strong className="text-white font-bold">7</strong> new today 🔥
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-white/10" />
+
+              {/* Event Metadata Table */}
+              <div className="space-y-2 text-xs sm:text-sm">
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-slate-400 font-normal">Registered</span>
+                  <span className="font-bold text-white">221</span>
+                </div>
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-slate-400 font-normal">Registration</span>
+                  <span className="font-bold text-white">13 Nov – 6 Dec</span>
+                </div>
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-slate-400 font-normal">Submissions</span>
+                  <span className="font-bold text-white">13 Nov – 12 Dec</span>
+                </div>
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-slate-400 font-normal">Entry fee</span>
+                  <span className="font-bold text-white">Free</span>
+                </div>
+                <div className="flex items-start justify-between py-1 gap-2">
+                  <span className="text-slate-400 font-normal shrink-0">Eligibility</span>
+                  <span className="font-bold text-white text-right leading-snug">
+                    Students, Freshers,<br />Professionals
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Venue & Logistics Card */}
+            <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-xs">
+              <SectionHead icon={MapPin} title="Venue & Logistics" sub="Confirmed specifications" />
+              <dl className="divide-y divide-slate-100 text-sm">
+                {[
+                  { icon: Globe, label: 'Format', value: `${event.mode} (Online Discord + Regional Partner Hubs)` },
+                  { icon: Trophy, label: 'Prizes & Recognition', value: event.placeholders.prizes },
+                  { icon: Users, label: 'Sponsors & Partners', value: event.placeholders.sponsors },
+                ].map((row) => (
+                  <div key={row.label} className="flex gap-3 py-3.5">
+                    <row.icon size={17} className="mt-0.5 shrink-0 text-[#0088E0]" />
+                    <div>
+                      <dt className="text-xs font-medium text-slate-500">{row.label}</dt>
+                      <dd className="text-sm font-semibold text-slate-900 leading-snug mt-0.5">{row.value}</dd>
+                    </div>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </aside>
         </div>
       </div>
 
-      {/* INTERACTIVE TRACK ZOOM POPUP (FULL STATEMENT DETAILS) */}
+      {/* Closing CTA */}
+      <section className="relative isolate overflow-hidden rounded-[2rem] border border-blue-500/20 bg-[#050C1F] text-white shadow-xl">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background: `
+              radial-gradient(ellipse 60% 80% at 85% 80%, rgba(14, 82, 230, 0.45) 0%, transparent 65%),
+              radial-gradient(ellipse 40% 50% at 15% 20%, rgba(6, 182, 212, 0.2) 0%, transparent 60%),
+              linear-gradient(135deg, #04091A 0%, #081636 50%, #0C2356 100%)
+            `,
+          }}
+        />
+        <div className="flex flex-col justify-between gap-6 p-8 sm:p-12 lg:flex-row lg:items-center">
+          <div className="max-w-xl space-y-2">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-300">Ready to Compete?</span>
+            <h2 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl text-white">
+              Ready to build real-world solutions?
+            </h2>
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+              Join student innovators across the country for 48 hours. Free registration, verified certificate, and live mentor guidance.
+            </p>
+          </div>
+          <div className="shrink-0">{registerButton('light')}</div>
+        </div>
+      </section>
+
+      {/* Track brief dialog */}
       {activeTrackDetail &&
         typeof document !== 'undefined' &&
         createPortal(
           <div
-            className="fixed inset-0 z-[100] w-screen h-screen flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-hidden top-0 left-0 right-0 bottom-0 m-0"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="track-dialog-title"
+            onClick={() => setSelectedTrackIndex(null)}
           >
-            <div className="relative w-full max-w-2xl max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-sky-100 flex flex-col font-manrope overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
-              {/* Header */}
-              <div className="flex items-start justify-between p-6 sm:p-7 border-b border-slate-100 bg-gradient-to-r from-sky-50/50 via-white to-blue-50/30">
-                <div className="flex items-center gap-4">
-                  {selectedTrackIndex !== null && renderTrackVisual(selectedTrackIndex)}
-                  <div className="space-y-1">
-                    <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#0088E0] text-white text-[10px] font-black uppercase tracking-wider">
-                      {activeTrackDetail.tag}
-                    </span>
-                    <h3 className="text-xl sm:text-2xl font-black text-[#10233F] tracking-tight leading-tight">
-                      {activeTrackDetail.title}
-                    </h3>
-                  </div>
+            <div
+              className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white font-manrope shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-4 border-b border-slate-200 p-6 sm:p-7">
+                <div className="space-y-1">
+                  <p className="font-mono text-sm text-slate-400">Track 0{(selectedTrackIndex ?? 0) + 1}</p>
+                  <h3 id="track-dialog-title" className="text-xl font-semibold leading-tight tracking-tight text-[#10233F] sm:text-2xl">
+                    {activeTrackDetail.title}
+                  </h3>
                 </div>
-
                 <button
                   type="button"
                   onClick={() => setSelectedTrackIndex(null)}
-                  className="p-2 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
+                  aria-label="Close"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 cursor-pointer"
                 >
                   <X size={20} />
                 </button>
               </div>
-
-              {/* Scrollable Body */}
-              <div className="p-6 sm:p-7 overflow-y-auto space-y-6 text-sm">
-                {/* Track Brief */}
-                <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-[#0088E0] mb-1.5">
-                    Problem Overview & Mission
-                  </h4>
-                  <p className="text-slate-700 leading-relaxed font-medium">
-                    {activeTrackDetail.brief}
-                  </p>
+              <div className="space-y-7 overflow-y-auto p-6 text-sm sm:p-7">
+                <div className="space-y-1.5">
+                  <h4 className="text-sm font-semibold text-slate-900">Problem overview</h4>
+                  <p className="leading-relaxed text-slate-600">{activeTrackDetail.brief}</p>
                 </div>
-
-                {/* Challenge Inspiration & Ideas */}
-                <div className="space-y-3">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                    Challenge Ideas & Inspiration Prompts
-                  </h4>
-                  <div className="space-y-2">
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-slate-900">Challenge ideas</h4>
+                  <ol className="divide-y divide-slate-100 rounded-2xl border border-slate-200">
                     {activeTrackDetail.ideas.map((idea, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3"
-                      >
-                        <div className="w-5 h-5 rounded-full bg-sky-100 text-[#0088E0] flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
-                          {idx + 1}
-                        </div>
-                        <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
-                          {idea}
-                        </p>
-                      </div>
+                      <li key={idx} className="flex gap-3 p-4">
+                        <span className="font-mono text-slate-400">0{idx + 1}</span>
+                        <p className="leading-relaxed text-slate-700">{idea}</p>
+                      </li>
                     ))}
-                  </div>
+                  </ol>
                 </div>
-
-                {/* Recommended Tech Stack */}
-                <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-2">
-                    Recommended Tech Stack & Tools
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-slate-900">Suggested stack</h4>
+                  <ul className="flex flex-wrap gap-2">
                     {activeTrackDetail.suggestedStack.map((tech, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1.5 rounded-xl bg-sky-50 text-[#0088E0] font-mono text-xs font-bold border border-sky-100"
-                      >
-                        {tech}
-                      </span>
+                      <li key={idx} className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs text-slate-700">{tech}</li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
-
-                {/* Evaluation Criteria */}
-                <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-2">
-                    Evaluation Focus
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-slate-900">How it is judged</h4>
+                  <ul className="space-y-2">
                     {activeTrackDetail.evaluation.map((evalItem, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2.5 rounded-xl bg-slate-50 text-slate-700 text-xs font-bold text-center border border-slate-100"
-                      >
-                        ✓ {evalItem}
-                      </div>
+                      <li key={idx} className="flex items-center gap-2.5 text-slate-700">
+                        <Check size={16} className="shrink-0 text-slate-400" /> {evalItem}
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               </div>
-
-              {/* Footer */}
-              <div className="p-5 sm:p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-3 border-t border-slate-200 p-5 sm:px-7">
                 <button
                   type="button"
                   onClick={() => setSelectedTrackIndex(null)}
-                  className="px-5 py-2.5 rounded-full border border-slate-200 text-slate-600 font-bold text-xs hover:bg-white cursor-pointer"
+                  className="min-h-[44px] rounded-xl border border-slate-200 px-5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 cursor-pointer"
                 >
                   Close
                 </button>
-
                 <button
                   type="button"
                   onClick={() => {
                     setSelectedTrackIndex(null);
                     setShowRegisterModal(true);
                   }}
-                  className="px-6 py-2.5 rounded-full bg-[#0088E0] hover:bg-[#0077CC] text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#10233F] px-6 text-sm font-semibold text-white transition-[transform,background-color] hover:bg-[#1a3558] active:scale-[0.97] cursor-pointer"
                 >
-                  <span>Register for this Track</span>
-                  <ArrowRight size={14} />
+                  Register for this track <ArrowRight size={15} />
                 </button>
               </div>
             </div>
@@ -940,7 +1184,33 @@ ${currentUrl}`;
           document.body
         )}
 
-      {/* Registration Modal */}
+      {/* Mobile-only Sticky Register Option (Accessibility & Quick Action) */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
+          <div>
+            <p className="font-bold text-slate-900 text-sm tracking-tight leading-tight">
+              ₹50K in prizes
+            </p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              10 days left · 221 registered
+            </p>
+          </div>
+          {isRegistered ? (
+            <div className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs font-bold text-emerald-700">
+              <CheckCircle2 size={15} /> Pass issued
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowRegisterModal(true)}
+              className="px-6 py-2.5 rounded-xl bg-[#10233F] text-white text-sm font-bold tracking-tight hover:bg-[#1a3558] active:scale-[0.98] transition-all shadow-sm cursor-pointer whitespace-nowrap"
+            >
+              Register
+            </button>
+          )}
+        </div>
+      </div>
+
       {showRegisterModal && (
         <EventRegistrationModal
           event={event}
